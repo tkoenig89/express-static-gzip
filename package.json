@@ -12,6 +12,10 @@
     "gzip"
   ],
   "author": "Tobias Koenig <tobiaskoenig1@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tkoenig89/express-static-gzip"
+  },
   "license": "MIT",
   "dependencies": {
     "express": "^4.14.0",

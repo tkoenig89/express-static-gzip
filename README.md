@@ -16,9 +16,9 @@ var app = express();
 app.use("/", staticGzip("rootFolder"));
 ```
 
-If you want to serve files from a folder where you might have a few files gziped and some are not, you can use an optional *options* object to define this.
+If you want to serve files from a folder where you might have a few files gziped and some are not, you can use an optional *options* object to make the middleware check the given root folder for all existing .gz files. In case someone requests a file, that is not available in gziped form, the non gziped version will be served without trying to access the filesystem. To first check the folder for all available .gz files, use the *ensureGzipedFiles* flag on the *options*.
+
 The *options* object is also passed to the express.static middleware, in case you want to configure this one as well.
-To first check the folder for all available .gz files, use the *ensureGzipedFiles* flag on the *options*.
 
 ```javascript
 var express = require("express");

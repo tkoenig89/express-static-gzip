@@ -1,8 +1,8 @@
-# static gzip
+# express-static-gzip
 Provides a small layer on top of the express.static middleware, which allows to serve pre-gziped files from a directory.
 
 # Requirements
-For the static-gzip middleware to work properly you need to first ensure that you have all files gziped. 
+For the express-static-gzip middleware to work properly you need to first ensure that you have all files gziped. 
 Simplest use case is to either have a folder with only .gz files, or you have a folder with the .gz files next to the original files.
 
 # Usage
@@ -10,7 +10,7 @@ In case you just want to serve gziped files only this example should work:
 
 ```javascript
 var express = require("express");
-var staticGzip = require("static-gzip");
+var staticGzip = require("express-static-gzip");
 var app = express();
 
 app.use("/", staticGzip("rootFolder"));
@@ -22,7 +22,7 @@ The *options* object is also passed to the express.static middleware, in case yo
 
 ```javascript
 var express = require("express");
-var staticGzip = require("static-gzip");
+var staticGzip = require("express-static-gzip");
 var app = express();
 
 app.use("/", staticGzip("rootFolder", { ensureGzipedFiles: true }));

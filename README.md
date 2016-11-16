@@ -1,12 +1,12 @@
 # express-static-gzip
-Provides a small layer on top of the express.static middleware, which allows to serve pre-gziped files from a directory.
+Provides a small layer on top of the express.static middleware, which allows to serve pre-gzipped files from a directory.
 
 # Requirements
-For the express-static-gzip middleware to work properly you need to first ensure that you have all files gziped. 
+For the express-static-gzip middleware to work properly you need to first ensure that you have all files gzipped. 
 Simplest use case is to either have a folder with only .gz files, or you have a folder with the .gz files next to the original files.
 
 # Usage
-In case you just want to serve gziped files only this example should work:
+In case you just want to serve gzipped files only this example should work:
 
 ```javascript
 var express = require("express");
@@ -16,7 +16,7 @@ var app = express();
 app.use("/", staticGzip("rootFolder"));
 ```
 
-If you want to serve files from a folder where you might have a few files gziped and some are not, you can use an optional *options* object to make the middleware check the given root folder for all existing .gz files. In case someone requests a file, that is not available in gziped form, the non gziped version will be served without trying to access the filesystem. To first check the folder for all available .gz files, use the *ensureGzipedFiles* flag on the *options*.
+If you want to serve files from a folder where you might have a few files gzipped and some are not, you can use an optional *options* object to make the middleware check the given root folder for all existing .gz files. In case someone requests a file, that is not available in gzipped form, the non gzipped version will be served without trying to access the filesystem. To first check the folder for all available .gz files, use the *ensureGzipedFiles* flag on the *options*.
 
 The *options* object is also passed to the express.static middleware, in case you want to configure this one as well.
 
@@ -28,7 +28,7 @@ var app = express();
 app.use("/", staticGzip("rootFolder", { ensureGzipedFiles: true }));
 ```
 
-In default mode a request for "/" or "\<somepath\>/" will serve index.html in a non-gziped version. To use the gziped version use the options flag *indexFromEmptyFile*.
+In default mode a request for "/" or "\<somepath\>/" will serve index.html in a non-gzipped version. To use the gzipped version use the options flag *indexFromEmptyFile*.
 
 ```javascript
 app.use("/", staticGzip("rootFolder", { 

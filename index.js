@@ -12,14 +12,19 @@ module.exports = staticGzip;
  * @returns express middleware function
  */
 function staticGzip(root, options) {
-    options = options || {};    
+    options = options || {};
     //create a express.static middleware to handle serving files 
-    var defaultStatic = express.static(root, options);
-    var gzipedFiles = null;
+    var defaultStatic = express.static(root, options),
+        compressions = [],
+        gzipedFiles = null;
 
     //search for all existing .gz files
     if (options.ensureGzipedFiles) {
-        gzipedFiles = findAllGzipedFiles(require("fs"), root);
+        addCompression("gzip", "gz");
+    }
+
+    if (compressions.length > 0) {
+        findAllCompressionFiles(require("fs"), root);
     }
 
     return function middleware(req, res, next) {
@@ -27,8 +32,9 @@ function staticGzip(root, options) {
 
         //check if browser supports gzip encoding
         var acceptEncoding = req.header("accept-encoding");
-        if (acceptEncoding && ~acceptEncoding.indexOf("gzip") && isGzipVersionExisting(req.url)) {
-            convertToGzipRequest(req, res);
+        var compression = findAvailableCompression(acceptEncoding);
+        if (compression && isCompressedFileExisting(req.url, compression)) {
+            convertToCompressedRequest(req, res, compression);
         }
 
         //allways call the default static file provider
@@ -40,12 +46,12 @@ function staticGzip(root, options) {
      * @param {Object} req
      * @param {Object} res
      */
-    function convertToGzipRequest(req, res) {
+    function convertToCompressedRequest(req, res, compression) {
         var type = mime.lookup(req.url);
         var charset = mime.charsets.lookup(type);
 
         req.url = req.url + ".gz";
-        res.setHeader("Content-Encoding", "gzip");
+        res.setHeader("Content-Encoding", compression.name);
         res.setHeader("Vary", "Accept-Encoding");
         res.setHeader("Content-Type", type + (charset ? "; charset=" + charset : ""));
     }
@@ -75,14 +81,29 @@ function staticGzip(root, options) {
         }
     }
 
+    function findAvailableCompression(acceptedEncoding) {
+        if (acceptedEncoding) {
+            for (var i = 0; i < compressions.length; i++) {
+                if (acceptedEncoding.indexOf(compressions[i].name) >= 0) {
+                    return compressions[i];
+                }
+            }
+        }
+        return null;
+    }
+
+    function isCompressedFileExisting(path, compression) {
+        var pathSplit = path.split("/");
+        var fileName = pathSplit[pathSplit.length - 1];
+        return compression.files.indexOf(fileName + compression.fileExtension) >= 0;
+    }
+
     /**
-     * Returns a list of all ".gz" files in the current folder. Search is done recursively!
+     * Picks all files into the matching compression's file list. Search is done recursively!
      * @param {Object} fs: node.fs
      * @param {string} folderPath
-     * @returns {string[]} list of all ".gz" files
      */
-    function findAllGzipedFiles(fs, folderPath) {
-        var gzipedFiles = [];
+    function findAllCompressionFiles(fs, folderPath) {
         var files = fs.readdirSync(folderPath);
         //iterate all files in the current folder
         for (var i = 0; i < files.length; i++) {
@@ -90,12 +111,37 @@ function staticGzip(root, options) {
             var stats = fs.statSync(filePath);
             if (stats.isDirectory()) {
                 //recursively search folders and append the matching files
-                var gzipedInFolder = findAllGzipedFiles(fs, filePath);
-                gzipedFiles = gzipedFiles.concat(gzipedInFolder);
-            } else if (filePath.endsWith(".gz")) {
-                gzipedFiles.push(files[i]);
+                findAllCompressionFiles(fs, filePath);
+            } else {
+                addFileToMatchingCompression(files[i]);
             }
         }
-        return gzipedFiles;
+    }
+
+    /**
+     *Takes a filename and checks if there is any compression type matching the file extension.
+     * @param {string} filePath
+     */
+    function addFileToMatchingCompression(filePath) {
+        for (var i = 0; i < compressions.length; i++) {
+            if (filePath.endsWith(compressions[i].fileExtension)) {
+                compressions[i].files.push(filePath);
+                return;
+            }
+        }
+    }
+
+    function isFileOfTypeGzip(filePath) {
+        return filePath.endsWith(".gz");
+    }
+
+    function addCompression(name, fileExtension) {
+        compressions.push(new Compression(name, fileExtension));
+    }
+
+    function Compression(name, fileExtension) {
+        this.name = name;
+        this.fileExtension = "." + fileExtension;
+        this.files = [];
     }
 }

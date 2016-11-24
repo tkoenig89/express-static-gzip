@@ -93,22 +93,6 @@ function staticGzip(root, options) {
     }
 
     /**
-     * Based on the browser's accepted encodings the first matching compression will be returned.
-     * @param {string} acceptedEncoding
-     * @returns {Compression}    
-     */
-    function findAvailableCompression(acceptedEncoding) {
-        if (acceptedEncoding) {
-            for (var i = 0; i < compressions.length; i++) {
-                if (acceptedEncoding.indexOf(compressions[i].name) >= 0) {
-                    return compressions[i];
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * Searches for the first matching compression available from the given compressions.
      * @param {[Compression]} compressionList
      * @param {string} acceptedEncoding
@@ -123,18 +107,6 @@ function staticGzip(root, options) {
             }
         }
         return null;
-    }
-
-    /**
-     * Tests if the given file is available in the provided compression format
-     * @param {string} path
-     * @param {Compression} compression
-     * @returns {boolean}
-     */
-    function isCompressedFileExisting(path, compression) {
-        var pathSplit = path.split("/");
-        var fileName = pathSplit[pathSplit.length - 1];
-        return compression.files.indexOf(fileName + compression.fileExtension) >= 0;
     }
 
     /**

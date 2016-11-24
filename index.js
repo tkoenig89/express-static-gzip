@@ -16,7 +16,7 @@ function staticGzip(root, options) {
     //create a express.static middleware to handle serving files 
     var defaultStatic = express.static(root, options),
         compressions = [],
-        gzipedFiles = null;
+        files = {};
 
     //read compressions from options
     setupCompressions();
@@ -29,10 +29,13 @@ function staticGzip(root, options) {
     return function middleware(req, res, next) {
         changeUrlFromEmptyToIndexHtml(req);
 
-        //check if browser supports gzip encoding
+        //get browser's' supported encodings
         var acceptEncoding = req.header("accept-encoding");
-        var compression = findAvailableCompression(acceptEncoding);
-        if (compression && isCompressedFileExisting(req.url, compression)) {
+
+        //check if the requested file is available in at least one of the supported encodings 
+        var matchedFile = files[req.url];
+        var compression = matchedFile && findAvailableCompressionForFile(matchedFile.compressions, acceptEncoding);
+        if (compression) {
             convertToCompressedRequest(req, res, compression);
         }
 
@@ -106,7 +109,24 @@ function staticGzip(root, options) {
     }
 
     /**
-     * Tests if the given file is availabe in the provided compression format
+     * Searches for the first matching compression available from the given compressions.
+     * @param {[Compression]} compressionList
+     * @param {string} acceptedEncoding
+     * @returns
+     */
+    function findAvailableCompressionForFile(compressionList, acceptedEncoding) {
+        if (acceptedEncoding) {
+            for (var i = 0; i < compressionList.length; i++) {
+                if (acceptedEncoding.indexOf(compressionList[i].name) >= 0) {
+                    return compressionList[i];
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Tests if the given file is available in the provided compression format
      * @param {string} path
      * @param {Compression} compression
      * @returns {boolean}
@@ -132,21 +152,38 @@ function staticGzip(root, options) {
                 //recursively search folders and append the matching files
                 findAllCompressionFiles(fs, filePath);
             } else {
-                addFileToMatchingCompression(files[i]);
+                addAllMatchingCompressionsToFile(files[i], filePath);
             }
         }
     }
 
     /**
-     *Takes a filename and checks if there is any compression type matching the file extension.
-     * @param {string} filePath
+     * Takes a filename and checks if there is any compression type matching the file extension.
+     * Adds all matching compressions to the file.     
+     * @param {string} fileName
+     * @param {string} fillFilePath
      */
-    function addFileToMatchingCompression(filePath) {
+    function addAllMatchingCompressionsToFile(fileName, fullFilePath) {
         for (var i = 0; i < compressions.length; i++) {
-            if (filePath.endsWith(compressions[i].fileExtension)) {
-                compressions[i].files.push(filePath);
+            if (fileName.endsWith(compressions[i].fileExtension)) {
+                addCompressionToFile(fullFilePath, compressions[i]);
                 return;
             }
+        }
+    }
+
+    /**
+     * Adds the compression to the file's list of available compressions
+     * @param {string} filePath
+     * @param {Compression} compression
+     */
+    function addCompressionToFile(filePath, compression) {
+        var srcFilePath = filePath.replace(compression.fileExtension, "").replace(root, "");
+        var existingFile = files[srcFilePath];
+        if (!existingFile) {
+            files[srcFilePath] = { compressions: [compression] };
+        } else {
+            existingFile.compressions.push(compression);
         }
     }
 
@@ -160,10 +197,15 @@ function staticGzip(root, options) {
             compressions.push(new Compression(name, fileExtension));
     }
 
+    /**
+     * Constructor
+     * @param {string} name
+     * @param {string} fileExtension
+     * @returns {name:string, fileExtension:string,files:[Object]}
+     */
     function Compression(name, fileExtension) {
         this.name = name;
         this.fileExtension = "." + fileExtension;
-        this.files = [];
     }
 
     /**

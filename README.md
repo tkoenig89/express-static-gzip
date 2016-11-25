@@ -1,39 +1,53 @@
 # express-static-gzip
-Provides a small layer on top of the express.static middleware, which allows to serve pre-gzipped files from a directory.
+Provides a small layer on top of the express.static middleware, which allows to serve pre-gzipped files from a directory. Now supports other compressions like *brotli* as well.
 
 # Requirements
-For the express-static-gzip middleware to work properly you need to first ensure that you have all files gzipped. 
-Simplest use case is to either have a folder with only .gz files, or you have a folder with the .gz files next to the original files.
+For the express-static-gzip middleware to work properly you need to first ensure that you have all files gzipped, which you want to serve as a compressed version to the browser.
+Simplest use case is to either have a folder with only .gz files, or you have a folder with the .gz files next to the original files. Some goes for other compressions.
 
 # Usage
-In case you just want to serve gzipped files only this example should work:
+In case you just want to serve gzipped files only this simple example would do:
 
 ```javascript
 var express = require("express");
-var staticGzip = require("express-static-gzip");
+var expressStaticGzip = require("express-static-gzip");
 var app = express();
 
-app.use("/", staticGzip("rootFolder"));
+app.use("/", expressStaticGzip("/my/rootFolder/"));
 ```
 
-If you want to serve files from a folder where you might have a few files gzipped and some are not, you can use an optional *options* object to make the middleware check the given root folder for all existing .gz files. In case someone requests a file, that is not available in gzipped form, the non gzipped version will be served without trying to access the filesystem. To first check the folder for all available .gz files, use the *ensureGzipedFiles* flag on the *options*.
-
+While gzip compression is always enabled you now have the choice to add other types of compressions using the *options* object. Currently *brotli* can be enabled using the **options.enableBrotli** flag.
+All other compressions need to be added by passing an array to **options.customCompressions**.
 The *options* object is also passed to the express.static middleware, in case you want to configure this one as well.
 
+The following example will show howto add brotli and deflate(with file extension *.zz*) to the middleware (it will still support gzip):
+
 ```javascript
 var express = require("express");
-var staticGzip = require("express-static-gzip");
+var expressStaticGzip = require("express-static-gzip");
 var app = express();
 
-app.use("/", staticGzip("rootFolder", { ensureGzipedFiles: true }));
+app.use("/", expressStaticGzip("/my/rootFolder/", {
+    enableBrotli: true,
+    customCompressions: [{
+        encodingName: "deflate",
+        fileExtension: "zz"
+    }]
+}));
 ```
 
-In default mode a request for "/" or "\<somepath\>/" will serve index.html in a non-gzipped version. To use the gzipped version use the options flag *indexFromEmptyFile*.
+Compressions are selected in the following order if a file is requested from the middleware:
+* any custom compression in the order they are provided to *options.customCompressions*
+* brotli (if enabled via *options.enableBrotli*)
+* gzip
+* plain file (in case no compression exists or none is matching the browsers accepted encodings header)
+
+When the middleware is created it will check the given root folder and all subfolders for files matching the registered compression. Adding files later to the folder will not be recognized by the middleware.
+
+In default mode a request for "/" or "\<somepath\>/" will now serve index.html as compressed version. If for some kind of reason you don't want this to happen set **options.indexFromEmptyFile** to false.
 
 ```javascript
-app.use("/", staticGzip("rootFolder", { 
-    ensureGzipedFiles: true,
-    indexFromEmptyFile: true }));
+app.use("/", expressStaticGzip("/my/rootFolder/", { indexFromEmptyFile: false }));
 ```
 
 # Example
@@ -42,12 +56,16 @@ In case you have the following basic file structure
 * rootFolder
  * index.html
  * index.html.gz
+ * index.html.br
+ * test.html.gz
  * main.js
 
-and you use set the *ensureGzipedFiles* flag to true, static-gzip will answer GET requests like this:
+and you use set the *enableBrotli* flag to true, express-static-gzip will answer GET requests like this:
 
-> GET /index.html >>> rootFolder/index.html.gz
+> GET / >>> /my/rootFolder/index.html.br
 
-> GET /main.js >>> rootFolder/main.js
+> GET /index.html >>> /my/rootFolder/index.html.br
 
-In case you would not set *ensureGzipedFiles* to true the request for main.js would result in an error response, as the server would not find *main.js.gz*.
+> GET /test.html >>> /my/rootFolder/test.html.gz
+
+> GET /main.js >>> /my/rootFolder/main.js

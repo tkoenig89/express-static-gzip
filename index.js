@@ -160,7 +160,7 @@ function expressStaticGzip(rootFolder, options) {
 
     /**
      * Registers a new compression to the module.
-     * @param {string} name
+     * @param {string} encodingName
      * @param {string} fileExtension
      */
     function registerCompression(encodingName, fileExtension) {
@@ -186,7 +186,7 @@ function expressStaticGzip(rootFolder, options) {
      */
     function findCompressionByName(encodingName) {
         for (var i = 0; i < compressions.length; i++) {
-            if (compressions[i].encodingName === name)
+            if (compressions[i].encodingName === encodingName)
                 return compressions[i];
         }
         return null;

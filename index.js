@@ -36,9 +36,12 @@ function expressStaticGzip(rootFolder, options) {
 
         //check if the requested file is available in at least one of the supported encodings 
         var matchedFile = files[req.url];
-        var compression = matchedFile && findAvailableCompressionForFile(matchedFile.compressions, acceptEncoding);
-        if (compression) {
-            convertToCompressedRequest(req, res, compression);
+        if (matchedFile) {
+            res.setHeader("Vary", "Accept-Encoding");
+            var compression = findAvailableCompressionForFile(matchedFile.compressions, acceptEncoding);
+            if (compression) {
+                convertToCompressedRequest(req, res, compression);
+            }
         }
 
         //allways call the default static file provider
@@ -77,7 +80,6 @@ function expressStaticGzip(rootFolder, options) {
 
         req.url = req.url + compression.fileExtension;
         res.setHeader("Content-Encoding", compression.encodingName);
-        res.setHeader("Vary", "Accept-Encoding");
         res.setHeader("Content-Type", type + (charset ? "; charset=" + charset : ""));
     }
 

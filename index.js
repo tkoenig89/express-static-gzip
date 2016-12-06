@@ -172,7 +172,7 @@ function expressStaticGzip(rootFolder, options) {
      * Constructor
      * @param {string} encodingName
      * @param {string} fileExtension
-     * @returns {name:string, fileExtension:string,files:[Object]}
+     * @returns {encodingName:string, fileExtension:string,files:[Object]}
      */
     function Compression(encodingName, fileExtension) {
         this.encodingName = encodingName;

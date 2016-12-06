@@ -3,13 +3,11 @@
   "version": "0.2.1",
   "description": "simple wrapper on top of express.static, that allows serving pre-gziped files",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [
     "express",
     "static",
-    "gzip"
+    "gzip",
+    "brotli"
   ],
   "author": "Tobias Koenig <tobiaskoenig1@gmail.com>",
   "repository": {

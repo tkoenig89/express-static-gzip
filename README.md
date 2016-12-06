@@ -6,7 +6,7 @@ For the express-static-gzip middleware to work properly you need to first ensure
 Simplest use case is to either have a folder with only .gz files, or you have a folder with the .gz files next to the original files. Some goes for other compressions.
 
 # Usage
-In case you just want to serve gzipped files only this simple example would do:
+In case you just want to serve gzipped files only, this simple example would do:
 
 ```javascript
 var express = require("express");

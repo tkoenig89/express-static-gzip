@@ -1,5 +1,5 @@
 var mime = require("mime");
-var express = require("express");
+var serveStatic = require("serve-static");
 
 module.exports = expressStaticGzip;
 
@@ -16,7 +16,7 @@ function expressStaticGzip(rootFolder, options) {
     if (typeof (options.indexFromEmptyFile) === "undefined") options.indexFromEmptyFile = true;
 
     //create a express.static middleware to handle serving files 
-    var defaultStatic = express.static(rootFolder, options),
+    var defaultStatic = serveStatic(rootFolder, options),
         compressions = [],
         files = {};
 

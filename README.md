@@ -18,9 +18,10 @@ app.use("/", expressStaticGzip("/my/rootFolder/"));
 
 While gzip compression is always enabled you now have the choice to add other types of compressions using the *options* object. Currently *brotli* can be enabled using the **options.enableBrotli** flag.
 All other compressions need to be added by passing an array to **options.customCompressions**.
+
 The *options* object is also passed to the express.static middleware, in case you want to configure this one as well.
 
-The following example will show howto add brotli and deflate(with file extension *.zz*) to the middleware (it will still support gzip):
+The following example will show how to add brotli and deflate (with file extension *.zz*) to the middleware (it will still support gzip), as well as `cache-control` headers:
 
 ```javascript
 var express = require("express");
@@ -32,7 +33,11 @@ app.use("/", expressStaticGzip("/my/rootFolder/", {
     customCompressions: [{
         encodingName: "deflate",
         fileExtension: "zz"
-    }]
+    }],
+    cache: {
+      flag: "public",
+      maxAge: "3600"
+    }
 }));
 ```
 

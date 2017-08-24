@@ -8,14 +8,14 @@ module.exports = expressStaticGzip;
  * It extends the express.static middleware with the capability to serve (previously) gziped files. For this
  * it asumes, the gziped files are next to the original files.
  * @param {string} rootFolder: folder to staticly serve files from
- * @param {{enableBrotli:boolean, customCompressions:[{encodingName:string,fileExtension:string}], indexFromEmptyFile:boolean}} options: options to change module behaviour  
+ * @param {{enableBrotli:boolean, customCompressions:[{encodingName:string,fileExtension:string}], indexFromEmptyFile:boolean}} options: options to change module behaviour
  * @returns express middleware function
  */
 function expressStaticGzip(rootFolder, options) {
     options = options || {};
     if (typeof (options.indexFromEmptyFile) === "undefined") options.indexFromEmptyFile = true;
 
-    //create a express.static middleware to handle serving files 
+    //create a express.static middleware to handle serving files
     var defaultStatic = serveStatic(rootFolder, options),
         compressions = [],
         files = {};
@@ -34,7 +34,7 @@ function expressStaticGzip(rootFolder, options) {
         //get browser's' supported encodings
         var acceptEncoding = req.header("accept-encoding");
 
-        //test if any compression is available 
+        //test if any compression is available
         var matchedFile = files[req.path];
         if (matchedFile) {
             //as long as there is any compression available for this file, add the Vary Header (used for caching proxies)
@@ -89,6 +89,11 @@ function expressStaticGzip(rootFolder, options) {
         req.url = req.path + compression.fileExtension + search;
         res.setHeader("Content-Encoding", compression.encodingName);
         res.setHeader("Content-Type", type + (charset ? "; charset=" + charset : ""));
+
+        if (options.cache) {
+            var directive = `${options.cache.flag},max-age=${options.cache.maxAge}`
+            res.setHeader("Cache-Control", directive);
+        }
     }
 
     /**
@@ -140,7 +145,7 @@ function expressStaticGzip(rootFolder, options) {
 
     /**
      * Takes a filename and checks if there is any compression type matching the file extension.
-     * Adds all matching compressions to the file.     
+     * Adds all matching compressions to the file.
      * @param {string} fileName
      * @param {string} fillFilePath
      */

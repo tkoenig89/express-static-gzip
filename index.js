@@ -1,5 +1,5 @@
-var mime = require("mime");
 var serveStatic = require("serve-static");
+var mime = serveStatic.mime;
 
 module.exports = expressStaticGzip;
 

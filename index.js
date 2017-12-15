@@ -124,6 +124,9 @@ function expressStaticGzip(rootFolder, options) {
      * @param {string} folderPath
      */
     function findAllCompressionFiles(fs, folderPath) {
+        // check if folder exists
+        if (!fs.existsSync(folderPath))  return; 
+        
         var files = fs.readdirSync(folderPath);
         //iterate all files in the current folder
         for (var i = 0; i < files.length; i++) {

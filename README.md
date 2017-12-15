@@ -1,9 +1,15 @@
 # express-static-gzip
-Provides a small layer on top of the express.static middleware, which allows to serve pre-gzipped files from a directory. Now supports other compressions like *brotli* as well.
+Provides a small layer on top of *serve-static*, which allows to serve pre-gzipped files. Supports *brotli* and any other compressions as well.
 
 # Requirements
-For the express-static-gzip middleware to work properly you need to first ensure that you have all files gzipped, which you want to serve as a compressed version to the browser.
+For the express-static-gzip middleware to work properly you need to first ensure that you have all files gzipped (or compressed with your desired algorithm), which you want to serve as a compressed version to the browser.
 Simplest use case is to either have a folder with only .gz files, or you have a folder with the .gz files next to the original files. Some goes for other compressions.
+
+# Install
+
+```bash
+    $ npm install express-static-gzip
+```
 
 # Usage
 In case you just want to serve gzipped files only, this simple example would do:
@@ -44,11 +50,16 @@ Compressions are selected in the following order if a file is requested from the
 
 When the middleware is created it will check the given root folder and all subfolders for files matching the registered compression. Adding files later to the folder will not be recognized by the middleware.
 
-In default mode a request for "/" or "\<somepath\>/" will now serve index.html as compressed version. If for some kind of reason you don't want this to happen set **options.indexFromEmptyFile** to false.
+# Behavior warning
+
+In default mode a request for "/" or "\<somepath\>/" will now serve index.html as compressed version. This could lead to **complications if you are serving a REST API** from the same path, when the *express-server-static* is registered before your API. 
+
+One solution would be to register *express-server-static* last. Otherweise you can set **options.indexFromEmptyFile** to false:
 
 ```javascript
 app.use("/", expressStaticGzip("/my/rootFolder/", { indexFromEmptyFile: false }));
 ```
+
 
 # Example
 In case you have the following basic file structure

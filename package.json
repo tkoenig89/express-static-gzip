@@ -1,6 +1,6 @@
 {
   "name": "express-static-gzip",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "simple wrapper on top of express.static, that allows serving pre-gziped files",
   "main": "index.js",
   "keywords": [

@@ -65,11 +65,11 @@ app.use("/", expressStaticGzip("/my/rootFolder/", { indexFromEmptyFile: false })
 In case you have the following basic file structure
 
 * rootFolder
- * index.html
- * index.html.gz
- * index.html.br
- * test.html.gz
- * main.js
+    * index.html
+    * index.html.gz
+    * index.html.br
+    * test.html.gz
+    * main.js
 
 and you use set the *enableBrotli* flag to true, express-static-gzip will answer GET requests like this:
 

@@ -52,15 +52,16 @@ When the middleware is created it will check the given root folder and all subfo
 
 # Available options
 
-* **enableBrotli**: boolean (default: **false**)
+* **`enableBrotli`**: boolean (default: **false**)
 
     This will enable brotli compression in addition to gzip
     
-* **index**: boolean (default: **true**)
+* **`index`**: boolean (default: **true**)
         
     If not set to false, any request to '/' or 'somepath/' will be answered with the file '/index.html' or 'somepath/index.html' in an accepted compression
+* **`indexFromEmptyFile`** (**deprecated**, see `index` option)
 
-* **customCompressions**: [{encodingName: string, fileExtension: string}]
+* **`customCompressions`**: [{encodingName: string, fileExtension: string}]
 
     Using this option, you can add any other compressions you would like. `encodingName` will be checked against the `Accept`-Header. `fileExtension` is used to find files using this compression. `fileExtension` does not require a dot (not ~~'.gz'~~, but `'gz'`).
 

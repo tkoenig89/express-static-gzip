@@ -1,0 +1,36 @@
+
+/**
+ * Prepares the options object for later use. Strips away any options used for serve-static
+ * @param {{enableBrotli?:boolean, customCompressions?:[{encodingName:string,fileExtension:string}], indexFromEmptyFile?:boolean, index?: boolean}} userOptions 
+ */
+function parseOptions(userOptions) {
+    userOptions = userOptions || {};
+
+    let options = {
+        index: getIndexValue(userOptions)
+    }
+
+    if (typeof (userOptions.enableBrotli) !== "undefined") {        
+        options.enableBrotli = !!userOptions.enableBrotli;
+    }
+
+    if (typeof (userOptions.customCompressions) === "object" ) {
+        options.customCompressions = userOptions.customCompressions;
+    }
+
+    return options;
+}
+
+function getIndexValue(opts) {
+    if (typeof (opts.indexFromEmptyFile) === "undefined" && typeof (opts.index) !== "undefined") {
+        return opts.index;
+    } else if (typeof (opts.index) === "undefined" && typeof (opts.indexFromEmptyFile) !== "undefined") {
+        return opts.indexFromEmptyFile;
+    } else {
+        return true;
+    }
+}
+
+module.exports = {
+    parseOptions: parseOptions
+};

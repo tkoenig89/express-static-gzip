@@ -1,5 +1,6 @@
-var serveStatic = require("serve-static");
-var mime = serveStatic.mime;
+let serveStatic = require('serve-static');
+let parseOptions = require('./util/options').parseOptions;
+let mime = serveStatic.mime;
 
 module.exports = expressStaticGzip;
 
@@ -8,17 +9,17 @@ module.exports = expressStaticGzip;
  * It extends the express.static middleware with the capability to serve (previously) gziped files. For this
  * it asumes, the gziped files are next to the original files.
  * @param {string} rootFolder: folder to staticly serve files from
- * @param {{enableBrotli:boolean, customCompressions:[{encodingName:string,fileExtension:string}], indexFromEmptyFile:boolean}} options: options to change module behaviour  
+ * @param {{enableBrotli?:boolean, customCompressions?:[{encodingName:string,fileExtension:string}], indexFromEmptyFile?:boolean, index?: boolean}} options: options to change module behaviour  
  * @returns express middleware function
  */
 function expressStaticGzip(rootFolder, options) {
-    options = options || {};
-    if (typeof (options.indexFromEmptyFile) === "undefined") options.indexFromEmptyFile = true;
-
     //create a express.static middleware to handle serving files 
-    var defaultStatic = serveStatic(rootFolder, options),
-        compressions = [],
-        files = {};
+    let defaultStatic = serveStatic(rootFolder, options);
+    let compressions = [];
+    let files = {};
+
+    // strip away unnecessary options 
+    options = parseOptions(options);
 
     //read compressions from options
     setupCompressions();
@@ -96,7 +97,7 @@ function expressStaticGzip(rootFolder, options) {
      * @param {Object} req
      */
     function changeUrlFromEmptyToIndexHtml(req) {
-        if (options.indexFromEmptyFile && req.url.endsWith("/")) {
+        if (options.index && req.url.endsWith("/")) {
             req.url += "index.html";
         }
     }

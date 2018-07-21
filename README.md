@@ -50,14 +50,30 @@ Compressions are selected in the following order if a file is requested from the
 
 When the middleware is created it will check the given root folder and all subfolders for files matching the registered compression. Adding files later to the folder will not be recognized by the middleware.
 
+# Available options
+
+* **enableBrotli**: boolean (default: **false**)
+
+    This will enable brotli compression in addition to gzip
+    
+* **index**: boolean (default: **true**)
+        
+    If not set to false, any request to '/' or 'somepath/' will be answered with the file '/index.html' or 'somepath/index.html' in an accepted compression
+
+* **customCompressions**: [{encodingName: string, fileExtension: string}]
+
+    Using this option, you can add any other compressions you would like. `encodingName` will be checked against the `Accept`-Header. `fileExtension` is used to find files using this compression. `fileExtension` does not require a dot (not ~~'.gz'~~, but `'gz'`).
+
+
+
 # Behavior warning
 
-In default mode a request for "/" or "\<somepath\>/" will now serve index.html as compressed version. This could lead to **complications if you are serving a REST API** from the same path, when the *express-server-static* is registered before your API. 
+In default mode a request for "/" or "\<somepath\>/" will serve index.html as compressed version. This could lead to **complications if you are serving a REST API** from the same path, when the *express-server-static* is registered before your API. 
 
-One solution would be to register *express-server-static* last. Otherweise you can set **options.indexFromEmptyFile** to false:
+One solution would be to register *express-server-static* last. Otherweise you can set **options.index** to false:
 
 ```javascript
-app.use("/", expressStaticGzip("/my/rootFolder/", { indexFromEmptyFile: false }));
+app.use("/", expressStaticGzip("/my/rootFolder/", { index: false }));
 ```
 
 

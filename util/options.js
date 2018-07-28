@@ -1,6 +1,7 @@
 
 /**
- * Prepares the options object for later use. Strips away any options used for serve-static
+ * Prepares the options object for later use. Strips away any options used for serve-static.
+ * Removes problematic options from the input options object.
  * @param {{enableBrotli?:boolean, customCompressions?:[{encodingName:string,fileExtension:string}], indexFromEmptyFile?:boolean, index?: boolean}} userOptions 
  */
 function parseOptions(userOptions) {
@@ -8,6 +9,11 @@ function parseOptions(userOptions) {
 
     let options = {
         index: getIndexValue(userOptions)
+    }
+
+    if(userOptions.index){
+        // required to not interfere with serve-static
+        delete userOptions.index;
     }
 
     if (typeof (userOptions.enableBrotli) !== "undefined") {        

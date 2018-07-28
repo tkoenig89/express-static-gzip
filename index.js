@@ -1,5 +1,6 @@
 let serveStatic = require('serve-static');
 let parseOptions = require('./util/options').parseOptions;
+let findEncoding = require('./util/encoding-selection').findEncoding;
 let mime = serveStatic.mime;
 
 module.exports = expressStaticGzip;
@@ -9,17 +10,17 @@ module.exports = expressStaticGzip;
  * It extends the express.static middleware with the capability to serve (previously) gziped files. For this
  * it asumes, the gziped files are next to the original files.
  * @param {string} rootFolder: folder to staticly serve files from
- * @param {{enableBrotli?:boolean, customCompressions?:[{encodingName:string,fileExtension:string}], indexFromEmptyFile?:boolean, index?: boolean}} options: options to change module behaviour  
+ * @param {{enableBrotli?:boolean, customCompressions?:[{encodingName:string,fileExtension:string}], index?: boolean}} options: options to change module behaviour  
  * @returns express middleware function
  */
 function expressStaticGzip(rootFolder, options) {
+    // strip away unnecessary options 
+    let opts = parseOptions(options);
+
     //create a express.static middleware to handle serving files 
     let defaultStatic = serveStatic(rootFolder, options);
     let compressions = [];
     let files = {};
-
-    // strip away unnecessary options 
-    options = parseOptions(options);
 
     //read compressions from options
     setupCompressions();
@@ -42,7 +43,7 @@ function expressStaticGzip(rootFolder, options) {
             res.setHeader("Vary", "Accept-Encoding");
 
             //use the first matching compression to serve a compresed file
-            var compression = findAvailableCompressionForFile(matchedFile.compressions, acceptEncoding);
+            var compression = findEncoding(acceptEncoding, matchedFile.compressions);
             if (compression) {
                 convertToCompressedRequest(req, res, compression);
             }
@@ -57,15 +58,15 @@ function expressStaticGzip(rootFolder, options) {
      */
     function setupCompressions() {
         //register all provided compressions
-        if (options.customCompressions && options.customCompressions.length > 0) {
-            for (var i = 0; i < options.customCompressions.length; i++) {
-                var customCompression = options.customCompressions[i];
+        if (opts.customCompressions && opts.customCompressions.length > 0) {
+            for (var i = 0; i < opts.customCompressions.length; i++) {
+                var customCompression = opts.customCompressions[i];
                 registerCompression(customCompression.encodingName, customCompression.fileExtension);
             }
         }
 
         //enable brotli compression
-        if (options.enableBrotli) {
+        if (opts.enableBrotli) {
             registerCompression("br", "br");
         }
 
@@ -97,7 +98,7 @@ function expressStaticGzip(rootFolder, options) {
      * @param {Object} req
      */
     function changeUrlFromEmptyToIndexHtml(req) {
-        if (options.index && req.url.endsWith("/")) {
+        if (opts.index && req.url.endsWith("/")) {
             req.url += "index.html";
         }
     }

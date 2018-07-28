@@ -124,6 +124,15 @@ describe('End to end', function () {
         });
     });
 
+    it('should serve in alphabetical order on wildcard', function () {
+        setupServer({ customCompressions: [{ encodingName: 'test', fileExtension: 'tst' }], enableBrotli: true });
+
+        return requestFile('/index.html', { 'accept-encoding': '*' }).then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal('index.html.br');
+        });
+    });
+
     /**
      * 
      * @param {string} fileName 

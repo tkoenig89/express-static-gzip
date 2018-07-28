@@ -17,7 +17,7 @@ function findEncoding(acceptEncoding, availableCompressions) {
 function findFirstMatchingCompression(sortedEncodingList, availableCompressions) {
     for (const encoding of sortedEncodingList) {
         for (let i = 0; i < availableCompressions.length; i++) {
-            if (encoding.name === availableCompressions[i].encodingName) {
+            if (encoding.name === '*' || encoding.name === availableCompressions[i].encodingName) {
                 return availableCompressions[i];
             }
         }

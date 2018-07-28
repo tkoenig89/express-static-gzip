@@ -39,4 +39,9 @@ describe('encoding-selection', function () {
         const result = findEncoding('brotli ; q=0.5 , gzip ; q=1.0', [GZIP, BROTLI]);
         expect(result).to.be.deep.equal(GZIP);
     });
+
+    it('should handle wildcard', function () {
+        const result = findEncoding('brotli ; q=0.5 , * ; q=1.0', [GZIP]);
+        expect(result).to.be.deep.equal(GZIP);
+    });
 });

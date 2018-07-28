@@ -43,12 +43,14 @@ app.use("/", expressStaticGzip("/my/rootFolder/", {
 ```
 
 Compressions are selected in the following order if a file is requested from the middleware:
-* any custom compression in the order they are provided to *options.customCompressions*
-* brotli (if enabled via *options.enableBrotli*)
-* gzip
-* plain file (in case no compression exists or none is matching the browsers accepted encodings header)
+* in order of the requests 'accept-encoding' header content (if no quality if provided)
+* in order of their respective quality (if provided)
+* in case of a wildcard '*', the compression is selected in alphabetical order (for now)
+* plain file (in case no compression exists or none is matching the browsers accept-encoding header)
 
-When the middleware is created it will check the given root folder and all subfolders for files matching the registered compression. Adding files later to the folder will not be recognized by the middleware.
+For more details see [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding), but not all of it is implemented at the moment.
+
+When the middleware is created it will check the given root folder and all subfolders for files matching the registered compression. **Adding files later to the folder will not be recognized by the middleware.**
 
 # Available options
 

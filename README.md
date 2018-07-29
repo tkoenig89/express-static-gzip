@@ -79,6 +79,7 @@ One solution would be to register *express-server-static* last. Otherweise you c
 app.use("/", expressStaticGzip("/my/rootFolder/", { index: false }));
 ```
 
+Because this middleware was developed for a static production server use case, to maximize performance, it is designed to look up and cache the compressed files corresponding to uncompressed file names on startup.  This means that it will not be aware of compressed files being added or removed later on.
 
 # Example
 In case you have the following basic file structure

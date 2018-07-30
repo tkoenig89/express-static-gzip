@@ -44,6 +44,7 @@ app.use('/', expressStaticGzip('/my/rootFolder/', {
 ```
 
 Compressions are selected in the following order if a file is requested from the middleware:
+* any encoding listed in `option.orderPreference` and supported by the client
 * in order of the requests 'accept-encoding' header content (if no quality if provided)
 * in order of their respective quality (if provided)
 * in case of a wildcard '*', the compression is selected in alphabetical order (for now)

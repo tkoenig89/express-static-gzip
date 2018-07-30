@@ -4,7 +4,7 @@
  * Removes problematic options from the input options object.
  * @param {{enableBrotli?:boolean, customCompressions?:[{encodingName:string,fileExtension:string}], indexFromEmptyFile?:boolean, index?: boolean}} userOptions 
  */
-function parseOptions(userOptions) {
+function sanitizeOptions(userOptions) {
     userOptions = userOptions || {};
 
     let options = {
@@ -24,6 +24,10 @@ function parseOptions(userOptions) {
         options.customCompressions = userOptions.customCompressions;
     }
 
+    if (typeof (userOptions.orderPreference) === "object" ) {
+        options.orderPreference = userOptions.orderPreference;
+    }
+
     return options;
 }
 
@@ -38,5 +42,5 @@ function getIndexValue(opts) {
 }
 
 module.exports = {
-    parseOptions: parseOptions
+    sanitizeOptions: sanitizeOptions
 };

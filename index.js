@@ -1,5 +1,5 @@
 let serveStatic = require('serve-static');
-let parseOptions = require('./util/options').parseOptions;
+let sanitizeOptions = require('./util/options').sanitizeOptions;
 let findEncoding = require('./util/encoding-selection').findEncoding;
 let mime = serveStatic.mime;
 
@@ -10,13 +10,13 @@ module.exports = expressStaticGzip;
  * It extends the express.static middleware with the capability to serve (previously) gziped files. For this
  * it asumes, the gziped files are next to the original files.
  * @param {string} rootFolder: folder to staticly serve files from
- * @param {{enableBrotli?:boolean, customCompressions?:[{encodingName:string,fileExtension:string}], index?: boolean}} options: options to change module behaviour  
+ * @param {{enableBrotli?:boolean, customCompressions?:{encodingName:string,fileExtension:string}[], orderPreference: string[], index?: boolean}} options: options to change module behaviour  
  * @returns express middleware function
  */
 function expressStaticGzip(rootFolder, options) {
     // strip away unnecessary options 
-    let opts = parseOptions(options);
-
+    let opts = sanitizeOptions(options);
+    
     //create a express.static middleware to handle serving files 
     let defaultStatic = serveStatic(rootFolder, options);
     let compressions = [];
@@ -43,7 +43,7 @@ function expressStaticGzip(rootFolder, options) {
             res.setHeader("Vary", "Accept-Encoding");
 
             //use the first matching compression to serve a compresed file
-            var compression = findEncoding(acceptEncoding, matchedFile.compressions);
+            var compression = findEncoding(acceptEncoding, matchedFile.compressions, opts.orderPreference);
             if (compression) {
                 convertToCompressedRequest(req, res, compression);
             }

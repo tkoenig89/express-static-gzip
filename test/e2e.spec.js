@@ -56,7 +56,7 @@ describe('End to end', function () {
         });
     });
 
-    it('should not serve brotli', function () {
+    it('should not serve brotli if not enabled', function () {
         setupServer();
 
         return requestFile('/', { 'accept-encoding': 'br' }).then(resp => {
@@ -130,6 +130,32 @@ describe('End to end', function () {
         return requestFile('/index.html', { 'accept-encoding': '*' }).then(resp => {
             expect(resp.statusCode).to.equal(200);
             expect(resp.body).to.equal('index.html.br');
+        });
+    });
+
+    it('should use server\'s prefered encoding', function () {
+        setupServer({
+            customCompressions: [{ encodingName: 'deflate', fileExtension: 'zz' }],
+            enableBrotli: true,
+            orderPreference: ['br']
+        });
+
+        return requestFile('/index.html', { 'accept-encoding': 'gzip, deflate, br' }).then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal('index.html.br');
+        });
+    });
+
+    it('should use client\'s prefered encoding, when server\'s not available', function () {
+        setupServer({
+            customCompressions: [{ encodingName: 'deflate', fileExtension: 'zz' }],
+            enableBrotli: true,
+            orderPreference: ['br']
+        });
+
+        return requestFile('/index.html', { 'accept-encoding': 'gzip, deflate' }).then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal('index.html.gz');
         });
     });
 

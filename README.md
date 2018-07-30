@@ -68,7 +68,7 @@ When the middleware is created it will check the given root folder and all subfo
 
     Using this option, you can add any other compressions you would like. `encodingName` will be checked against the `Accept`-Header. `fileExtension` is used to find files using this compression. `fileExtension` does not require a dot (not ~~'.gz'~~, but `'gz'`).
 
-* **`orderPreference`**: [{string[]}]
+* **`orderPreference`**: string[]
 
     This options allows overwriting the client's requested encoding preference (see [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding)) with a server side preference. Any encoding listed in `orderPreference` will be used first (if supported by the client) before falling back to the client's supported encodings. The order of entries in `orderPreference` is taken into account.
 

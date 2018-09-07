@@ -164,7 +164,7 @@ function expressStaticGzip(rootFolder, options) {
      * @param {Compression} compression
      */
     function addCompressionToFile(filePath, compression) {
-        var srcFilePath = filePath.replace(compression.fileExtension, "").replace(rootFolder, "");
+        var srcFilePath = filePath.replace(rootFolder, "").replace(compression.fileExtension, "");
         var existingFile = files[srcFilePath];
         if (!existingFile) {
             files[srcFilePath] = { compressions: [compression] };

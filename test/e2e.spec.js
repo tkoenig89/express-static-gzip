@@ -159,6 +159,15 @@ describe('End to end', function () {
         });
     });
 
+    it('should handle foldername with dot', function(){
+        setupServer(null, 'wwwroot.gzipped');
+
+        return requestFile("/index.html", { 'accept-encoding': 'gzip'}).then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal('index.html.gz');
+        });
+    });
+
     /**
      * 
      * @param {string} fileName 
@@ -182,9 +191,10 @@ describe('End to end', function () {
      * 
      * @param {{enableBrotli?:boolean, customCompressions?:[{encodingName:string,fileExtension:string}], index?: boolean}} options 
      */
-    function setupServer(options) {
+    function setupServer(options, dir) {
+        dir = dir || 'wwwroot';
         const app = express();
-        app.use(serveStaticGzip(__dirname + '/dummy-files', options));
+        app.use(serveStaticGzip(__dirname + '/' + dir, options));
         server = app.listen(8181);
     }
 });

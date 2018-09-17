@@ -168,6 +168,15 @@ describe('End to end', function () {
         });
     });
 
+    it('should handle url encoded path', function(){
+        setupServer();
+
+        return requestFile("/filename with spaces.txt", { 'accept-encoding': 'gzip'}).then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal('"filename with spaces.txt.gz"');
+        });
+    });
+
     /**
      * 
      * @param {string} fileName 

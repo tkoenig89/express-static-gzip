@@ -37,7 +37,7 @@ function expressStaticGzip(rootFolder, options) {
         var acceptEncoding = req.header("accept-encoding");
 
         //test if any compression is available 
-        var matchedFile = files[req.path];
+        var matchedFile = files[decodeURIComponent(req.path)];
         if (matchedFile) {
             //as long as there is any compression available for this file, add the Vary Header (used for caching proxies)
             res.setHeader("Vary", "Accept-Encoding");

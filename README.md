@@ -3,7 +3,7 @@ Provides a small layer on top of *serve-static*, which allows to serve pre-gzipp
 
 # Requirements
 For the express-static-gzip middleware to work properly you need to first ensure that you have all files gzipped (or compressed with your desired algorithm), which you want to serve as a compressed version to the browser.
-Simplest use case is to either have a folder with only .gz files, or you have a folder with the .gz files next to the original files. Some goes for other compressions.
+Simplest use case is to either have a folder with only .gz files, or you have a folder with the .gz files next to the original files. Same goes for other compressions.
 
 # Install
 

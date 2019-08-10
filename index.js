@@ -10,7 +10,7 @@ module.exports = expressStaticGzip;
  * It extends the express.static middleware with the capability to serve (previously) gziped files. For this
  * it asumes, the gziped files are next to the original files.
  * @param {string} rootFolder: folder to staticly serve files from
- * @param {{enableBrotli?:boolean, customCompressions?:{encodingName:string,fileExtension:string}[], orderPreference: string[], index?: boolean}} options: options to change module behaviour  
+ * @param {expressStaticGzip.ExpressStaticGzipOptions} options: options to change module behaviour  
  * @returns express middleware function
  */
 function expressStaticGzip(rootFolder, options) {
@@ -18,7 +18,7 @@ function expressStaticGzip(rootFolder, options) {
     let opts = sanitizeOptions(options);
     
     //create a express.static middleware to handle serving files 
-    let defaultStatic = serveStatic(rootFolder, options);
+    let defaultStatic = serveStatic(rootFolder, opts.serveStatic || null);
     let compressions = [];
     let files = {};
 
@@ -99,7 +99,7 @@ function expressStaticGzip(rootFolder, options) {
      */
     function changeUrlFromEmptyToIndexHtml(req) {
         if (opts.index && req.url.endsWith("/")) {
-            req.url += "index.html";
+            req.url += opts.index;
         }
     }
 

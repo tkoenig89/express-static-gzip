@@ -1,46 +1,94 @@
+module.exports = {
+    sanitizeOptions: sanitizeOptions
+};
 
 /**
  * Prepares the options object for later use. Strips away any options used for serve-static.
  * Removes problematic options from the input options object.
- * @param {{enableBrotli?:boolean, customCompressions?:[{encodingName:string,fileExtension:string}], indexFromEmptyFile?:boolean, index?: boolean}} userOptions 
+ * @param {expressStaticGzip.ExpressStaticGzipOptions} userOptions 
+ * @returns {expressStaticGzip.ExpressStaticGzipOptions}
  */
 function sanitizeOptions(userOptions) {
     userOptions = userOptions || {};
 
-    let options = {
+    /**
+     * @type {expressStaticGzip.ExpressStaticGzipOptions}
+     */
+    let sanitizedOptions = {
         index: getIndexValue(userOptions)
     }
 
-    if(userOptions.index){
-        // required to not interfere with serve-static
-        delete userOptions.index;
+    if (typeof (userOptions.enableBrotli) !== "undefined") {
+        sanitizedOptions.enableBrotli = !!userOptions.enableBrotli;
     }
 
-    if (typeof (userOptions.enableBrotli) !== "undefined") {        
-        options.enableBrotli = !!userOptions.enableBrotli;
+    if (typeof (userOptions.customCompressions) === "object") {
+        sanitizedOptions.customCompressions = userOptions.customCompressions;
     }
 
-    if (typeof (userOptions.customCompressions) === "object" ) {
-        options.customCompressions = userOptions.customCompressions;
+    if (typeof (userOptions.orderPreference) === "object") {
+        sanitizedOptions.orderPreference = userOptions.orderPreference;
     }
 
-    if (typeof (userOptions.orderPreference) === "object" ) {
-        options.orderPreference = userOptions.orderPreference;
-    }
+    prepareServeStaticOptions(userOptions, sanitizedOptions);
 
-    return options;
+    return sanitizedOptions;
 }
 
-function getIndexValue(opts) {
-    if (typeof (opts.indexFromEmptyFile) === "undefined" && typeof (opts.index) !== "undefined") {
-        return opts.index;
-    } else if (typeof (opts.index) === "undefined" && typeof (opts.indexFromEmptyFile) !== "undefined") {
-        return opts.indexFromEmptyFile;
+/**
+ * 
+ * @param {expressStaticGzip.ExpressStaticGzipOptions} userOptions 
+ * @param {expressStaticGzip.ExpressStaticGzipOptions} sanitizedOptions
+ */
+function prepareServeStaticOptions(userOptions, sanitizedOptions) {
+    if (typeof (userOptions.serveStatic) !== 'undefined') {
+        sanitizedOptions.serveStatic = userOptions.serveStatic;
+    }
+
+    copyServeStaticOptions(userOptions, sanitizedOptions);
+}
+
+/**
+ * Used to be backwards compatible by copying options in root level to the serveStatic options property.
+ * @param {expressStaticGzip.ExpressStaticGzipOptions} userOptions 
+ * @param {expressStaticGzip.ExpressStaticGzipOptions} sanitizedOptions 
+ */
+function copyServeStaticOptions(userOptions, sanitizedOptions) {
+    var staticGzipOptionsProperties = ['cacheControl', 'dotfiles', 'etag', 'extensions', 'index', 'fallthrough', 'immutable', 'lastModified', 'maxAge', 'redirect', 'setHeaders'];
+
+    for (var propertyIdx in staticGzipOptionsProperties) {
+        var property = staticGzipOptionsProperties[propertyIdx];
+
+        if (typeof (userOptions[property]) !== 'undefined' && (!sanitizedOptions.serveStatic || typeof (sanitizedOptions.serveStatic[property]) === 'undefined')) {
+            setStaticGzipOptionsProperty(sanitizedOptions, property, userOptions[property]);
+        }
+    }
+}
+
+/**
+ * 
+ * @param {expressStaticGzip.ExpressStaticGzipOptions} sanitizedOptions 
+ * @param {string} property 
+ * @param {any} value 
+ */
+function setStaticGzipOptionsProperty(sanitizedOptions, property, value) {
+    if (typeof (sanitizedOptions.serveStatic) !== 'object') {
+        sanitizedOptions.serveStatic = {};
+    }
+
+    sanitizedOptions.serveStatic[property] = value;
+}
+
+/**
+ * Takes care of retrieving the index value, by also checking the deprecated `indexFromEmptyFile`
+ * @param {expressStaticGzip.ExpressStaticGzipOptions} options 
+ */
+function getIndexValue(options) {
+    if (typeof (options.indexFromEmptyFile) === "undefined" && typeof (options.index) !== "undefined") {
+        return options.index;
+    } else if (typeof (options.index) === "undefined" && typeof (options.indexFromEmptyFile) !== "undefined") {
+        return options.indexFromEmptyFile;
     } else {
-        return true;
+        return 'index.html';
     }
 }
-
-module.exports = {
-    sanitizeOptions: sanitizeOptions
-};

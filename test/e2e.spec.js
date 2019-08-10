@@ -38,6 +38,15 @@ describe('End to end', function () {
         });
     });
 
+    it('should handle index option false, serveStatic.index overwritten', function () {
+        setupServer({ index: false, serveStatic: { index: "index.html" } });
+
+        return requestFile('/').then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal("index.html")
+        });
+    });
+
     it('should handle index option default', function () {
         setupServer();
 
@@ -47,12 +56,12 @@ describe('End to end', function () {
         });
     });
 
-    it('should handle index option true', function () {
-        setupServer({ index: true });
+    it('should handle index option set', function () {
+        setupServer({ index: 'main.js', enableBrotli: true });
 
-        return requestFile('/', { 'accept-encoding': 'gzip' }).then(resp => {
+        return requestFile('/', { 'accept-encoding': 'br' }).then(resp => {
             expect(resp.statusCode).to.equal(200);
-            expect(resp.body).to.equal('index.html.gz');
+            expect(resp.body).to.equal('main.js.br');
         });
     });
 
@@ -159,21 +168,41 @@ describe('End to end', function () {
         });
     });
 
-    it('should handle foldername with dot', function(){
+    it('should handle foldername with dot', function () {
         setupServer(null, 'wwwroot.gzipped');
 
-        return requestFile("/index.html", { 'accept-encoding': 'gzip'}).then(resp => {
+        return requestFile("/index.html", { 'accept-encoding': 'gzip' }).then(resp => {
             expect(resp.statusCode).to.equal(200);
             expect(resp.body).to.equal('index.html.gz');
         });
     });
 
-    it('should handle url encoded path', function(){
+    it('should handle url encoded path', function () {
         setupServer();
 
-        return requestFile("/filename with spaces.txt", { 'accept-encoding': 'gzip'}).then(resp => {
+        return requestFile("/filename with spaces.txt", { 'accept-encoding': 'gzip' }).then(resp => {
             expect(resp.statusCode).to.equal(200);
             expect(resp.body).to.equal('"filename with spaces.txt.gz"');
+        });
+    });
+
+    it('should use serveStatic options', function () {
+        setupServer({ serveStatic: { setHeaders: (res) => { res.setHeader('Test-X', 'Value-Y') } } });
+
+        return requestFile('/index.html').then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.headers['test-x']).to.equal('Value-Y');
+            expect(resp.headers['test-y']).to.be.undefined;
+        });
+    });
+
+    it('should use serveStatic options set in root options', function () {
+        setupServer({ setHeaders: (res) => { res.setHeader('Test-X', 'Value-Y') } });
+
+        return requestFile('/index.html').then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.headers['test-x']).to.equal('Value-Y');
+            expect(resp.headers['test-y']).to.be.undefined;
         });
     });
 
@@ -198,7 +227,7 @@ describe('End to end', function () {
 
     /**
      * 
-     * @param {{enableBrotli?:boolean, customCompressions?:[{encodingName:string,fileExtension:string}], index?: boolean}} options 
+     * @param {expressStaticGzip.ExpressStaticGzipOptions} options 
      */
     function setupServer(options, dir) {
         dir = dir || 'wwwroot';

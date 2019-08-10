@@ -22,10 +22,10 @@ declare namespace expressStaticGzip {
 
         /**
          * By default this module will send "index.html" files in response to a request on a directory. 
-         * To disable this set to false.
-         * @default false
+         * To disable this set false or to supply a new index pass a string.
+         * @default 'index.html'
          */
-        index?: boolean;
+        index?: boolean | string;
 
         /**
          * Allows overwriting the client's requested encoding preference 

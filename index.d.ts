@@ -1,3 +1,23 @@
+// Type definitions for express-static-gzip 2.0
+/* =================== USAGE ===================
+
+    import * as expressStaticGzip from "express-static-gzip";
+    app.use(expressStaticGzip("wwwroot", {enableBrotli: true, index: 'index.htm'}))
+
+ =============================================== */
+
+import * as express from "express";
+import * as serverStatic from "serve-static";
+
+/**
+ * Generates a middleware function to serve static files. It is build on top of serveStatic.
+ * It extends serveStatic with the capability to serve (previously) gziped files. For this
+ * it asumes, the gziped files are next to the original files.
+ * @param root folder to staticly serve files from
+ * @param options options to configure expressStaticGzip
+ */
+declare function expressStaticGzip(root: string, options: expressStaticGzip.ExpressStaticGzipOptions): express.Handler;
+
 declare namespace expressStaticGzip {
 
     /**
@@ -41,7 +61,7 @@ declare namespace expressStaticGzip {
          * This will be forwarded to the underlying `serveStatic` instance used by `expressStaticGzip`.
          * @default null
          */
-        serveStatic?: import('serve-static').ServeStaticOptions
+        serveStatic?: serverStatic.ServeStaticOptions
     }
 
     interface Compression {
@@ -56,3 +76,5 @@ declare namespace expressStaticGzip {
         fileExtension: string;
     }
 }
+
+export = expressStaticGzip;

@@ -6,19 +6,19 @@ let mime = serveStatic.mime;
 module.exports = expressStaticGzip;
 
 /**
- * Generates a middleware function to serve static files. It is build on top of the express.static middleware.
- * It extends the express.static middleware with the capability to serve (previously) gziped files. For this
+ * Generates a middleware function to serve static files. It is build on top of serveStatic.
+ * It extends serveStatic with the capability to serve (previously) gziped files. For this
  * it asumes, the gziped files are next to the original files.
- * @param {string} rootFolder: folder to staticly serve files from
+ * @param {string} root: folder to staticly serve files from
  * @param {expressStaticGzip.ExpressStaticGzipOptions} options: options to change module behaviour  
  * @returns express middleware function
  */
-function expressStaticGzip(rootFolder, options) {
+function expressStaticGzip(root, options) {
     // strip away unnecessary options 
     let opts = sanitizeOptions(options);
     
     //create a express.static middleware to handle serving files 
-    let defaultStatic = serveStatic(rootFolder, opts.serveStatic || null);
+    let defaultStatic = serveStatic(root, opts.serveStatic || null);
     let compressions = [];
     let files = {};
 
@@ -27,7 +27,7 @@ function expressStaticGzip(rootFolder, options) {
 
     //if at least one compression has been added, lookup files
     if (compressions.length > 0) {
-        findAllCompressionFiles(require("fs"), rootFolder);
+        findAllCompressionFiles(require("fs"), root);
     }
 
     return function expressStaticGzip(req, res, next) {
@@ -164,7 +164,7 @@ function expressStaticGzip(rootFolder, options) {
      * @param {Compression} compression
      */
     function addCompressionToFile(filePath, compression) {
-        var srcFilePath = filePath.replace(rootFolder, "").replace(compression.fileExtension, "");
+        var srcFilePath = filePath.replace(root, "").replace(compression.fileExtension, "");
         var existingFile = files[srcFilePath];
         if (!existingFile) {
             files[srcFilePath] = { compressions: [compression] };

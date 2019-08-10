@@ -22,7 +22,7 @@ Simplest use case is to either have a folder with only .gz files, or you have a 
 
 * Moves all options for `serverStatic` in it's own section, to prevent collisions when setting up your static fileserving middleware. 
 
-* For backwards compatibility all properties in the root options object will be copied to the new `serverStatic` section, except if you have set values there already. Here is a small example of this behaviour:
+* For backwards compatibility all root options that apply to `serveStatic` will be copied to the new `serverStatic` section, except if you have set values there already. Here is a small example of this behaviour:
     ```JavaScript
     {
         enableBrotli: true,         // not a serverStatic option, will not be moved

@@ -1,4 +1,9 @@
+
 # express-static-gzip
+
+[![npm][npm-version-image]][npm-url]
+[![npm][npm-downloads-image]][npm-url]
+
 Provides a small layer on top of *serve-static*, which allows to serve pre-gzipped files. Supports *brotli* and any other compressions as well.
 
 # Requirements
@@ -105,3 +110,8 @@ and you use set the *enableBrotli* flag to true, express-static-gzip will answer
 > GET /test.html >>> /my/rootFolder/test.html.gz
 
 > GET /main.js >>> /my/rootFolder/main.js
+
+
+[npm-url]: https://www.npmjs.com/package/express-static-gzip
+[npm-downloads-image]: https://img.shields.io/npm/dw/express-static-gzip
+[npm-version-image]: https://img.shields.io/npm/v/express-static-gzip

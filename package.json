@@ -10,7 +10,8 @@
     "express",
     "static",
     "gzip",
-    "brotli"
+    "brotli",
+    "serve"
   ],
   "author": "Tobias Koenig <tobiaskoenig1@gmail.com>",
   "repository": {

@@ -3,7 +3,7 @@ declare namespace expressStaticGzip {
     /**
      * Options to configure an `expressStaticGzip` instance.
      */
-    declare interface ExpressStaticGzipOptions {
+    interface ExpressStaticGzipOptions {
 
         /**
          * Add any other compressions not supported by default. 
@@ -38,13 +38,13 @@ declare namespace expressStaticGzip {
         orderPreference?: string[];
 
         /**
-         * This will be forwarded to the underlying `serveStatic` instance, used by `expressStaticGzip`.
+         * This will be forwarded to the underlying `serveStatic` instance used by `expressStaticGzip`.
          * @default null
          */
         serveStatic?: import('serve-static').ServeStaticOptions
     }
 
-    declare interface Compression {
+    interface Compression {
         /**
          * Will be checked against the request's Accept-Header. 
          */

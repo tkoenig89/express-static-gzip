@@ -4,7 +4,7 @@
 [![npm][npm-version-image]][npm-url]
 [![npm][npm-downloads-image]][npm-url]
 
-Provides a small layer on top of *serve-static*, which allows to serve pre-gzipped files. Supports *brotli* and any other compressions as well.
+Provides a small layer on top of *serve-static*, which allows to serve pre-gzipped files. Supports *brotli* and allows configuring any other compression you can think of as well.
 
 # Requirements
 For the express-static-gzip middleware to work properly you need to first ensure that you have all files gzipped (or compressed with your desired algorithm), which you want to serve as a compressed version to the browser.
@@ -15,6 +15,28 @@ Simplest use case is to either have a folder with only .gz files, or you have a 
 ```bash
     $ npm install express-static-gzip
 ```
+
+# Changelog for v2.0.0
+
+* Even so this is mayor release, this should be fully backwards compatible and should not have any breaking change to v1.1.3.
+
+* Moves all options for `serverStatic` in it's own section, to prevent collisions when setting up your static fileserving middleware. 
+
+* For backwards compatibility all properties in the root options object will be copied to the new `serverStatic` section, except if you have set values there already. Here is a small example of this behaviour:
+    ```JavaScript
+    {
+        enableBrotli: true,         // not a serverStatic option, will not be moved
+        maxAge: 123,                // not copied, as already present.
+        index: 'main.js',           // copied to serveStatic section
+        serveStatic: {
+            maxAge: 234,            // will be kept 
+            cacheControl: false     // will be kept as well
+        }
+    }
+    ```
+
+    In the above scenario serveStatic will use `cacheControl`: false, `index`: 'main.js', `maxAge`:234.
+
 
 # Usage
 In case you just want to serve gzipped files only, this simple example would do:
@@ -63,13 +85,11 @@ When the middleware is created it will check the given root folder and all subfo
 
 * **`enableBrotli`**: boolean (default: **false**)
 
-    This will enable brotli compression in addition to gzip
+    Enables support for the brotli compression, using file extension 'br' (e.g. 'index.html.br').
     
 * **`index`**: boolean (default: **true**)
         
-    If not set to false, any request to '/' or 'somepath/' will be answered with the file '/index.html' or 'somepath/index.html' in an accepted compression
-
-* **`indexFromEmptyFile`** (**deprecated**, see `index` option)
+    By default this module will send "index.html" files in response to a request on a directory. To disable this set false or to supply a new index pass a string.
 
 * **`customCompressions`**: [{encodingName: string, fileExtension: string}]
 
@@ -78,6 +98,10 @@ When the middleware is created it will check the given root folder and all subfo
 * **`orderPreference`**: string[]
 
     This options allows overwriting the client's requested encoding preference (see [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding)) with a server side preference. Any encoding listed in `orderPreference` will be used first (if supported by the client) before falling back to the client's supported encodings. The order of entries in `orderPreference` is taken into account.
+
+* **`serveStatic`**: [ServeStaticOptions](https://github.com/expressjs/serve-static#options)
+    
+    This will be forwarded to the underlying `serveStatic` instance used by `expressStaticGzip`
 
 # Behavior warning
 

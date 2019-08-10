@@ -6,7 +6,6 @@
 
  =============================================== */
 
-import * as express from "express";
 import * as serverStatic from "serve-static";
 
 /**
@@ -16,7 +15,7 @@ import * as serverStatic from "serve-static";
  * @param root folder to staticly serve files from
  * @param options options to configure expressStaticGzip
  */
-declare function expressStaticGzip(root: string, options: expressStaticGzip.ExpressStaticGzipOptions): express.Handler;
+declare function expressStaticGzip(root: string, options: expressStaticGzip.ExpressStaticGzipOptions): (req: any, res: any, next: any) => any;
 
 declare namespace expressStaticGzip {
 

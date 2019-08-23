@@ -87,9 +87,9 @@ When the middleware is created it will check the given root folder and all subfo
 
     Enables support for the brotli compression, using file extension 'br' (e.g. 'index.html.br').
     
-* **`index`**: boolean (default: **true**)
+* **`index`**: boolean | string (default: 'index.html')
         
-    By default this module will send "index.html" files in response to a request on a directory. To disable this set false or to supply a new index pass a string.
+    By default this module will send "index.html" files in response to a request on a directory (url ending with '/'). To disable this set false or to supply a new index pass a string.
 
 * **`customCompressions`**: [{encodingName: string, fileExtension: string}]
 

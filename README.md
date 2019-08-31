@@ -3,11 +3,15 @@
 
 [![npm][npm-version-image]][npm-url]
 [![npm][npm-downloads-image]][npm-url]
+[![Donate][donate-paypal-image]][donate-url]
 
 Provides a small layer on top of *serve-static*, which allows to serve pre-gzipped files. Supports *brotli* and allows configuring any other compression you can think of as well.
 
+If `express-static-gzip` saved you some time, feel free to buy me a cup of coffee :) [![Donate][donate-paypal-image]][donate-url]
+
+
 # Requirements
-For the express-static-gzip middleware to work properly you need to first ensure that you have all files gzipped (or compressed with your desired algorithm), which you want to serve as a compressed version to the browser.
+For the `express-static-gzip` middleware to work properly you need to first ensure that you have all files gzipped (or compressed with your desired algorithm) which you want to serve as a compressed version to the browser.
 Simplest use case is to either have a folder with only .gz files, or you have a folder with the .gz files next to the original files. Same goes for other compressions.
 
 # Install
@@ -18,11 +22,11 @@ Simplest use case is to either have a folder with only .gz files, or you have a 
 
 # Changelog for v2.0
 
-* Even so this is mayor release, this should be fully backwards compatible and should not have any breaking change to v1.1.3.
+* Even so this is a mayor release, this should be fully backwards compatible and should not have any breaking change to v1.1.3.
 
-* Moves all options for `serverStatic` in it's own section, to prevent collisions when setting up your static fileserving middleware. 
+* Moved all options for `serverStatic` in it's own section, to prevent collisions when setting up your static fileserving middleware. 
 
-* For backwards compatibility all root options that apply to `serveStatic` will be copied to the new `serverStatic` section, except if you have set values there already. Here is a small example of this behaviour:
+* For backwards compatibility all root options that apply to `serveStatic` will be copied to the new `serverStatic` section, except if you have set values there already (no overwrite). Here is a small example of this behaviour:
     ```JavaScript
     {
         enableBrotli: true,         // not a serverStatic option, will not be moved
@@ -51,9 +55,9 @@ app.use("/", expressStaticGzip("/my/rootFolder/"));
 
 While gzip compression is always enabled you now have the choice to add other types of compressions using the *options* object. Currently *brotli* can be enabled using the **options.enableBrotli** flag.
 All other compressions need to be added by passing an array to **options.customCompressions**.
-The *options* object is also passed to the express.static middleware, in case you want to configure this one as well.
+The *options.serveStatic* section is passed to the underlying `serve-static` middleware, in case you want to configure this one as well.
 
-The following example will show howto add brotli and deflate(with file extension *.zz*) to the middleware (it will still support gzip) and force brotli to be used if available (`orderPreference`):
+The following example will show how to add brotli and deflate(with file extension *.zz*) to the middleware (it will still support gzip) and force brotli to be used if available (`orderPreference`):
 
 ```javascript
 var express = require('express');
@@ -89,7 +93,7 @@ When the middleware is created it will check the given root folder and all subfo
     
 * **`index`**: boolean | string (default: 'index.html')
         
-    By default this module will send "index.html" files in response to a request on a directory (url ending with '/'). To disable this set false or to supply a new index pass a string.
+    By default this module will send "index.html" files in response to a request on a directory (url ending with '/'). To disable this set false or to supply a new index file pass a string (like 'index.htm').
 
 * **`customCompressions`**: [{encodingName: string, fileExtension: string}]
 
@@ -105,7 +109,7 @@ When the middleware is created it will check the given root folder and all subfo
 
 # Behavior warning
 
-In default mode a request for "/" or "\<somepath\>/" will serve index.html as compressed version. This could lead to **complications if you are serving a REST API** from the same path, when the *express-server-static* is registered before your API. 
+In default mode a request for "/" or "\<somepath\>/" will serve index.html as compressed version. This could lead to **complications if you are serving a REST API** from the same path, when *express-server-static* is registered before your API. 
 
 One solution would be to register *express-server-static* last. Otherweise you can set **options.index** to false:
 
@@ -113,7 +117,7 @@ One solution would be to register *express-server-static* last. Otherweise you c
 app.use("/", expressStaticGzip("/my/rootFolder/", { index: false }));
 ```
 
-Because this middleware was developed for a static production server use case, to maximize performance, it is designed to look up and cache the compressed files corresponding to uncompressed file names on startup.  This means that it will not be aware of compressed files being added or removed later on.
+Because this middleware was developed for a static production server use case to maximize performance, it is designed to look up and cache the compressed files corresponding to uncompressed file names on startup.  This means that it will not be aware of compressed files being added or removed later on.
 
 # Example
 In case you have the following basic file structure
@@ -139,3 +143,5 @@ and you use set the *enableBrotli* flag to true, express-static-gzip will answer
 [npm-url]: https://www.npmjs.com/package/express-static-gzip
 [npm-downloads-image]: https://img.shields.io/npm/dw/express-static-gzip
 [npm-version-image]: https://img.shields.io/npm/v/express-static-gzip
+[donate-paypal-image]: https://img.shields.io/badge/Donate-PayPal-green.svg
+[donate-url]: ttps://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J8F2P79BKCTG8

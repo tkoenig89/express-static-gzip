@@ -144,4 +144,4 @@ and you use set the *enableBrotli* flag to true, express-static-gzip will answer
 [npm-downloads-image]: https://img.shields.io/npm/dw/express-static-gzip
 [npm-version-image]: https://img.shields.io/npm/v/express-static-gzip
 [donate-paypal-image]: https://img.shields.io/badge/Donate-PayPal-green.svg
-[donate-url]: ttps://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J8F2P79BKCTG8
+[donate-url]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J8F2P79BKCTG8

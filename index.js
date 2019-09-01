@@ -1,63 +1,49 @@
+let fs = require("fs");
 let serveStatic = require('serve-static');
 let sanitizeOptions = require('./util/options').sanitizeOptions;
 let findEncoding = require('./util/encoding-selection').findEncoding;
 let mime = serveStatic.mime;
 
-module.exports = expressStaticGzip;
+module.exports = expressStaticGzipMiddleware;
 
 /**
- * Generates a middleware function to serve static files. It is build on top of serveStatic.
- * It extends serveStatic with the capability to serve (previously) gziped files. For this
- * it asumes, the gziped files are next to the original files.
- * @param {string} root: folder to staticly serve files from
- * @param {expressStaticGzip.ExpressStaticGzipOptions} options: options to change module behaviour  
+ * Generates a middleware function to serve pre-compressed files. It is build on top of serveStatic.
+ * The pre-compressed files need to be placed next to the original files, in the provided `root` directory.
+ * @param { string } root: directory to staticly serve files from
+ * @param { expressStaticGzip.ExpressStaticGzipOptions } options: options to change module behaviour  
  * @returns express middleware function
  */
-function expressStaticGzip(root, options) {
-    // strip away unnecessary options 
+function expressStaticGzipMiddleware(root, options) {
     let opts = sanitizeOptions(options);
-    
-    //create a express.static middleware to handle serving files 
-    let defaultStatic = serveStatic(root, opts.serveStatic || null);
+    let serveStaticMiddleware = serveStatic(root, opts.serveStatic || null);
     let compressions = [];
     let files = {};
 
-    //read compressions from options
-    setupCompressions();
+    registerCompressionsFromOptions();
+    parseRootDirForCompressedFiles();
+    
+    return expressStaticGzip;
 
-    //if at least one compression has been added, lookup files
-    if (compressions.length > 0) {
-        findAllCompressionFiles(require("fs"), root);
-    }
+    function expressStaticGzip(req, res, next) {
+        changeUrlFromDirectoryToIndexFile(req);
 
-    return function expressStaticGzip(req, res, next) {
-        changeUrlFromEmptyToIndexHtml(req);
+        var clientsAcceptedEncodings = req.header("accept-encoding");
 
-        //get browser's' supported encodings
-        var acceptEncoding = req.header("accept-encoding");
-
-        //test if any compression is available 
-        var matchedFile = files[decodeURIComponent(req.path)];
-        if (matchedFile) {
-            //as long as there is any compression available for this file, add the Vary Header (used for caching proxies)
+        var fileWithMatchingPath = files[decodeURIComponent(req.path)];
+        if (fileWithMatchingPath) {
+            // The Vary Header is required for caching proxies to work properly
             res.setHeader("Vary", "Accept-Encoding");
 
-            //use the first matching compression to serve a compresed file
-            var compression = findEncoding(acceptEncoding, matchedFile.compressions, opts.orderPreference);
+            var compression = findEncoding(clientsAcceptedEncodings, fileWithMatchingPath.compressions, opts.orderPreference);
             if (compression) {
                 convertToCompressedRequest(req, res, compression);
             }
         }
 
-        //allways call the default static file provider
-        defaultStatic(req, res, next);
-    };
+        serveStaticMiddleware(req, res, next);
+    }
 
-    /**
-     * Reads the options into a list of available compressions.
-     */
-    function setupCompressions() {
-        //register all provided compressions
+    function registerCompressionsFromOptions() {
         if (opts.customCompressions && opts.customCompressions.length > 0) {
             for (var i = 0; i < opts.customCompressions.length; i++) {
                 var customCompression = opts.customCompressions[i];
@@ -65,20 +51,13 @@ function expressStaticGzip(root, options) {
             }
         }
 
-        //enable brotli compression
         if (opts.enableBrotli) {
             registerCompression("br", "br");
         }
 
-        //gzip compression is enabled by default
         registerCompression("gzip", "gz");
     }
 
-    /**
-     * Changes the url and adds required headers to serve a compressed file.
-     * @param {Object} req
-     * @param {Object} res
-     */
     function convertToCompressedRequest(req, res, compression) {
         var type = mime.lookup(req.path);
         var charset = mime.charsets.lookup(type);
@@ -93,52 +72,29 @@ function expressStaticGzip(root, options) {
         res.setHeader("Content-Type", type + (charset ? "; charset=" + charset : ""));
     }
 
-    /**
-     * In case it's enabled in the options and the requested url does not request a specific file, "index.html" will be appended.
-     * @param {Object} req
-     */
-    function changeUrlFromEmptyToIndexHtml(req) {
+    function changeUrlFromDirectoryToIndexFile(req) {
         if (opts.index && req.url.endsWith("/")) {
             req.url += opts.index;
         }
     }
-
-    /**
-     * Searches for the first matching compression available from the given compressions.
-     * @param {[Compression]} compressionList
-     * @param {string} acceptedEncoding
-     * @returns
-     */
-    function findAvailableCompressionForFile(compressionList, acceptedEncoding) {
-        if (acceptedEncoding) {
-            for (var i = 0; i < compressionList.length; i++) {
-                if (acceptedEncoding.indexOf(compressionList[i].encodingName) >= 0) {
-                    return compressionList[i];
-                }
-            }
+    
+    function parseRootDirForCompressedFiles() {
+        if (compressions.length > 0) {
+            findCompressedFilesInDirectory(root);
         }
-        return null;
     }
 
-    /**
-     * Picks all files into the matching compression's file list. Search is done recursively!
-     * @param {Object} fs: node.fs
-     * @param {string} folderPath
-     */
-    function findAllCompressionFiles(fs, folderPath) {
-        // check if folder exists
-        if (!fs.existsSync(folderPath))  return; 
+    function findCompressedFilesInDirectory(directoryPath) {
+        if (!fs.existsSync(directoryPath))  return; 
         
-        var files = fs.readdirSync(folderPath);
-        //iterate all files in the current folder
-        for (var i = 0; i < files.length; i++) {
-            var filePath = folderPath + "/" + files[i];
+        var filesInDirectory = fs.readdirSync(directoryPath);
+        for (var i = 0; i < filesInDirectory.length; i++) {
+            var filePath = directoryPath + "/" + filesInDirectory[i];
             var stats = fs.statSync(filePath);
             if (stats.isDirectory()) {
-                //recursively search folders and append the matching files
-                findAllCompressionFiles(fs, filePath);
+                findCompressedFilesInDirectory(fs, filePath);
             } else {
-                addAllMatchingCompressionsToFile(files[i], filePath);
+                addMatchingCompressionsToFile(filesInDirectory[i], filePath);
             }
         }
     }
@@ -149,7 +105,7 @@ function expressStaticGzip(root, options) {
      * @param {string} fileName
      * @param {string} fillFilePath
      */
-    function addAllMatchingCompressionsToFile(fileName, fullFilePath) {
+    function addMatchingCompressionsToFile(fileName, fullFilePath) {
         for (var i = 0; i < compressions.length; i++) {
             if (fileName.endsWith(compressions[i].fileExtension)) {
                 addCompressionToFile(fullFilePath, compressions[i]);
@@ -179,15 +135,15 @@ function expressStaticGzip(root, options) {
      * @param {string} fileExtension
      */
     function registerCompression(encodingName, fileExtension) {
-        if (!findCompressionByName(encodingName))
+        if (!findCompressionByName(encodingName)) {
             compressions.push(new Compression(encodingName, fileExtension));
+        }
     }
 
     /**
-     * Constructor
      * @param {string} encodingName
      * @param {string} fileExtension
-     * @returns {encodingName:string, fileExtension:string,files:[Object]}
+     * @returns {{encodingName:string, fileExtension:string}}
      */
     function Compression(encodingName, fileExtension) {
         this.encodingName = encodingName;
@@ -195,15 +151,16 @@ function expressStaticGzip(root, options) {
     }
 
     /**
-     * Compression lookup by name.
      * @param {string} encodingName
-     * @returns {Compression}
+     * @returns {{encodingName:string, fileExtension:string}}
      */
     function findCompressionByName(encodingName) {
         for (var i = 0; i < compressions.length; i++) {
-            if (compressions[i].encodingName === encodingName)
+            if (compressions[i].encodingName === encodingName) {
                 return compressions[i];
+            }
         }
+
         return null;
     }
 }

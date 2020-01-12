@@ -92,7 +92,7 @@ function expressStaticGzipMiddleware(root, options) {
             var filePath = directoryPath + "/" + filesInDirectory[i];
             var stats = fs.statSync(filePath);
             if (stats.isDirectory()) {
-                findCompressedFilesInDirectory(fs, filePath);
+                findCompressedFilesInDirectory(filePath);
             } else {
                 addMatchingCompressionsToFile(filesInDirectory[i], filePath);
             }

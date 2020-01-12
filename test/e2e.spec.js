@@ -177,6 +177,15 @@ describe('End to end', function () {
         });
     });
 
+    it('should handle subforlders', function () {
+        setupServer(null, 'wwwroot.gzipped');
+
+        return requestFile("/css/style.css", { 'accept-encoding': 'gzip' }).then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal('style.css.gz');
+        });
+    });
+
     it('should handle url encoded path', function () {
         setupServer();
 

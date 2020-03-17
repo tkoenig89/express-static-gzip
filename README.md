@@ -2,6 +2,7 @@
 # express-static-gzip
 
 [![npm][npm-version-image]][npm-url]
+![Node CI](https://github.com/tkoenig89/express-static-gzip/workflows/Node%20CI/badge.svg?branch=master&event=push)
 [![npm][npm-downloads-image]][npm-url]
 [![Donate][donate-paypal-image]][donate-url]
 

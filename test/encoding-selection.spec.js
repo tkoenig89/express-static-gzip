@@ -70,4 +70,9 @@ describe('encoding-selection', function () {
         const result = findEncoding('identity;q=1, gzip;q=0.5', [GZIP]);
         expect(result).to.be.null;
     });
+
+    it('should not use encodings with q=0', function () {
+        const result = findEncoding('br;q=1, *;q=0', [GZIP]);
+        expect(result).to.be.null;
+    });
 });

@@ -1,7 +1,7 @@
 // see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding
 
 // Indicates the identity function (i.e. no compression, nor modification)
-const IDENTITY = 'identity';
+let IDENTITY = 'identity';
 
 /**
  * 
@@ -64,6 +64,7 @@ function parseEncoding(acceptedEncoding) {
     return acceptedEncoding.split(',')
         .map(encoding => parseQuality(encoding))
         .sort((encodingA, encodingB) => encodingB.q - encodingA.q)
+        .filter(encoding => encoding.q > 0)
         .map(encoding => encoding.name);
 }
 

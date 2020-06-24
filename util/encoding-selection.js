@@ -1,7 +1,7 @@
 // see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding
 
 // Indicates the identity function (i.e. no compression, nor modification)
-let IDENTITY = 'identity';
+const IDENTITY = 'identity';
 
 /**
  * 

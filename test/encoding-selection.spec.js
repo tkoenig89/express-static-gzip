@@ -65,4 +65,14 @@ describe('encoding-selection', function () {
         const result = findEncoding('gzip; q=0.6, deflate; q=1, br;q=0.5', [GZIP, BROTLI, DEFLATE], ['br']);
         expect(result).to.be.deep.equal(BROTLI);
     });
+
+    it('should treat identity as null', function () {
+        const result = findEncoding('identity;q=1, gzip;q=0.5', [GZIP]);
+        expect(result).to.be.null;
+    });
+
+    it('should not use encodings with q=0', function () {
+        const result = findEncoding('br;q=1, *;q=0', [GZIP]);
+        expect(result).to.be.null;
+    });
 });

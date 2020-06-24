@@ -1,5 +1,8 @@
 // see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding
 
+// Indicates the identity function (i.e. no compression, nor modification)
+const IDENTITY = 'identity';
+
 /**
  * 
  * @param {string} acceptEncoding Content of the accept-encoding header
@@ -18,6 +21,9 @@ function findEncoding(acceptEncoding, availableCompressions, preference) {
 
 function findFirstMatchingCompression(sortedEncodingList, availableCompressions) {
     for (const encoding of sortedEncodingList) {
+        if (encoding === IDENTITY) {
+            return null;
+        }
         for (let i = 0; i < availableCompressions.length; i++) {
             if (encoding === '*' || encoding === availableCompressions[i].encodingName) {
                 return availableCompressions[i];
@@ -58,6 +64,7 @@ function parseEncoding(acceptedEncoding) {
     return acceptedEncoding.split(',')
         .map(encoding => parseQuality(encoding))
         .sort((encodingA, encodingB) => encodingB.q - encodingA.q)
+        .filter(encoding => encoding.q > 0)
         .map(encoding => encoding.name);
 }
 

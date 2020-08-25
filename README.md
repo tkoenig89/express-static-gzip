@@ -25,9 +25,9 @@ Simplest use case is to either have a folder with only .gz files, or you have a 
 
 * Even so this is a mayor release, this should be fully backwards compatible and should not have any breaking change to v1.1.3.
 
-* Moved all options for `serverStatic` in it's own section, to prevent collisions when setting up your static fileserving middleware. 
+* Moved all options for `serverStatic` in its own section (`serveStatic`) to prevent collisions when setting up your static fileserving middleware. 
 
-* For backwards compatibility all root options that apply to `serveStatic` will be copied to the new `serverStatic` section, except if you have set values there already (no overwrite). Here is a small example of this behaviour:
+* For backwards compatibility all root options that apply to `serveStatic` will be copied to the new `serveStatic` section, except if you have set values there already (no overwrite). Here is a small example of this behaviour:
     ```JavaScript
     {
         enableBrotli: true,         // not a serverStatic option, will not be moved
@@ -58,7 +58,7 @@ While gzip compression is always enabled you now have the choice to add other ty
 All other compressions need to be added by passing an array to **options.customCompressions**.
 The *options.serveStatic* section is passed to the underlying `serve-static` middleware, in case you want to configure this one as well.
 
-The following example will show how to add brotli and deflate(with file extension *.zz*) to the middleware (it will still support gzip) and force brotli to be used if available (`orderPreference`):
+The following example will show how to add brotli and deflate (with file extension *.zz*) to the middleware (it will still support gzip) and force brotli to be used if available (`orderPreference`):
 
 ```javascript
 var express = require('express');

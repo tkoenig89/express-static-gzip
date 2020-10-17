@@ -27,7 +27,7 @@ function expressStaticGzipMiddleware(root, options) {
     function expressStaticGzip(req, res, next) {
         changeUrlFromDirectoryToIndexFile(req);
 
-        var clientsAcceptedEncodings = req.header("accept-encoding");
+        var clientsAcceptedEncodings = req.headers["accept-encoding"];
 
         var fileWithMatchingPath = files[decodeURIComponent(req.path)];
         if (fileWithMatchingPath) {

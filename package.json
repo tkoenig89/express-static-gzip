@@ -1,10 +1,15 @@
 {
   "name": "express-static-gzip",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "simple wrapper on top of express.static, that allows serving pre-gziped files",
   "main": "index.js",
   "types": "index.d.ts",
-  "files": ["util/", "LICENSE.md", "README.md", "index.d.ts"],
+  "files": [
+    "util/",
+    "LICENSE.md",
+    "README.md",
+    "index.d.ts"
+  ],
   "scripts": {
     "test": "mocha test/*.spec.js"
   },

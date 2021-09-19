@@ -60,7 +60,14 @@ declare namespace expressStaticGzip {
          * This will be forwarded to the underlying `serveStatic` instance used by `expressStaticGzip`.
          * @default null
          */
-        serveStatic?: serverStatic.ServeStaticOptions
+        serveStatic?: serverStatic.ServeStaticOptions;
+
+        /**
+         * Allow to prevent throw error if server can't find any file that match request path
+         * Options for FileSystem.statSync - https://nodejs.org/api/fs.html#fs_fs_statsync_path_options
+         * @default true
+         */
+        throwIfNotFoundFile?: boolean;
     }
 
     interface Compression {

@@ -15,7 +15,8 @@ function sanitizeOptions(userOptions) {
      * @type {expressStaticGzip.ExpressStaticGzipOptions}
      */
     let sanitizedOptions = {
-        index: getIndexValue(userOptions)
+        index: getIndexValue(userOptions),
+        throwIfNotFoundFile: true,
     }
 
     if (typeof (userOptions.enableBrotli) !== "undefined") {
@@ -28,6 +29,10 @@ function sanitizeOptions(userOptions) {
 
     if (typeof (userOptions.orderPreference) === "object") {
         sanitizedOptions.orderPreference = userOptions.orderPreference;
+    }
+
+    if (typeof (userOptions.throwIfNotFoundFile) === "boolean") {
+        sanitizedOptions.throwIfNotFoundFile = userOptions.throwIfNotFoundFile;
     }
 
     prepareServeStaticOptions(userOptions, sanitizedOptions);

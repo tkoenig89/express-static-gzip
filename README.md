@@ -108,6 +108,10 @@ When the middleware is created it will check the given root folder and all subfo
     
     This will be forwarded to the underlying `serveStatic` instance used by `expressStaticGzip`
 
+* **`throwIfNotFoundFile`**: boolean (default: **true**)
+    
+    Allow to prevent throw error if server can't find any file that match request path
+
 # Behavior warning
 
 In default mode a request for "/" or "\<somepath\>/" will serve index.html as compressed version. This could lead to **complications if you are serving a REST API** from the same path, when *express-server-static* is registered before your API. 

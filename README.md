@@ -112,7 +112,7 @@ When the middleware is created it will check the given root folder and all subfo
 
 In default mode a request for "/" or "\<somepath\>/" will serve index.html as compressed version. This could lead to **complications if you are serving a REST API** from the same path, when *express-server-static* is registered before your API. 
 
-One solution would be to register *express-server-static* last. Otherweise you can set **options.index** to false:
+One solution would be to register *express-server-static* last. Otherwise you can set **options.index** to false:
 
 ```javascript
 app.use("/", expressStaticGzip("/my/rootFolder/", { index: false }));

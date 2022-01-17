@@ -6,7 +6,7 @@
 [![npm][npm-downloads-image]][npm-url]
 [![Donate][donate-paypal-image]][donate-url]
 
-Provides a small layer on top of *serve-static*, which allows to serve pre-gzipped files. Supports *brotli* and allows configuring any other compression you can think of as well.
+Provides a small layer on top of [*serve-static*](http://expressjs.com/en/resources/middleware/serve-static.html), which allows to serve pre-gzipped files. Supports *brotli* and allows configuring any other compression you can think of as well.
 
 If `express-static-gzip` saved you some time, feel free to buy me a cup of coffee :) [![Donate][donate-paypal-image]][donate-url]
 
@@ -25,7 +25,7 @@ Simplest use case is to either have a folder with only .gz files, or you have a 
 
 * Even so this is a mayor release, this should be fully backwards compatible and should not have any breaking change to v1.1.3.
 
-* Moved all options for `serverStatic` in its own section (`serveStatic`) to prevent collisions when setting up your static fileserving middleware. 
+* Moved all options for `serveStatic` in its own section (`serveStatic`) to prevent collisions when setting up your static fileserving middleware. 
 
 * For backwards compatibility all root options that apply to `serveStatic` will be copied to the new `serveStatic` section, except if you have set values there already (no overwrite). Here is a small example of this behaviour:
     ```JavaScript

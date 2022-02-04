@@ -27,14 +27,22 @@ function expressStaticGzipMiddleware(root, options) {
     function expressStaticGzip(req, res, next) {
         changeUrlFromDirectoryToIndexFile(req);
 
-        var clientsAcceptedEncodings = req.headers["accept-encoding"];
+        let clientsAcceptedEncodings = req.headers["accept-encoding"];
 
-        var fileWithMatchingPath = files[decodeURIComponent(req.path)];
+        let path = "";
+        try {
+            path = decodeURIComponent(req.path);
+        } catch (e) {
+            res.send(400, e.message);
+            return;
+        }
+        
+        let fileWithMatchingPath = files[path];
         if (fileWithMatchingPath) {
             // The Vary Header is required for caching proxies to work properly
             res.setHeader("Vary", "Accept-Encoding");
 
-            var compression = findEncoding(clientsAcceptedEncodings, fileWithMatchingPath.compressions, opts.orderPreference);
+            let compression = findEncoding(clientsAcceptedEncodings, fileWithMatchingPath.compressions, opts.orderPreference);
             if (compression) {
                 convertToCompressedRequest(req, res, compression);
             }

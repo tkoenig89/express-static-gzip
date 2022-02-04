@@ -215,6 +215,15 @@ describe('End to end', function () {
         });
     });
 
+    it('should handle malformed uri', function () {
+      setupServer({ index: 'main.js', enableBrotli: true });
+  
+      return requestFile('/%c0').then((resp) => {
+        expect(resp.statusCode).to.equal(400);
+        expect(resp.body).to.equal("URI malformed");
+      });
+    });
+
     /**
      * 
      * @param {string} fileName 

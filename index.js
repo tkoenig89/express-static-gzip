@@ -33,7 +33,7 @@ function expressStaticGzipMiddleware(root, options) {
         try {
             path = decodeURIComponent(req.path);
         } catch (e) {
-            res.send(400, e.message);
+            res.status(400).send(e.message);
             return;
         }
         

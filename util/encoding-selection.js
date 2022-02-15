@@ -33,12 +33,9 @@ function findFirstMatchingCompression(
     if (encoding === IDENTITY) {
       return null;
     }
-    for (let i = 0; i < availableCompressions.length; i++) {
-      if (
-        encoding === "*" ||
-        encoding === availableCompressions[i].encodingName
-      ) {
-        return availableCompressions[i];
+    for (let availableCompression of availableCompressions) {
+      if (encoding === "*" || encoding === availableCompression.encodingName) {
+        return availableCompression;
       }
     }
   }

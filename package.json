@@ -19,7 +19,8 @@
     "static",
     "gzip",
     "brotli",
-    "serve"
+    "serve",
+    "compression"
   ],
   "author": "Tobias Koenig <tobiaskoenig1@gmail.com>",
   "repository": {

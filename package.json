@@ -11,7 +11,8 @@
     "index.d.ts"
   ],
   "scripts": {
-    "test": "mocha test/*.spec.js"
+    "test": "mocha test/*.spec.js",
+    "test:coverage": "nyc --reporter=lcov mocha"
   },
   "keywords": [
     "express",
@@ -33,6 +34,7 @@
     "chai": "^4.1.2",
     "express": "^4.16.3",
     "mocha": "^5.2.0",
+    "nyc": "^15.1.0",
     "request": "^2.87.0"
   }
 }

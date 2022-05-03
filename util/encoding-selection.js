@@ -1,13 +1,13 @@
 // see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding
 
 // Indicates the identity function (i.e. no compression, nor modification)
-const IDENTITY = "identity";
+const IDENTITY = 'identity';
 
 /**
  *
  * @param {string} acceptEncoding Content of the accept-encoding header
  * @param {{encodingName: string, fileExtension: string}[]} availableCompressions
- * @param {{string[]} preference
+ * @param {string[]} preference
  */
 function findEncoding(acceptEncoding, availableCompressions, preference) {
   if (acceptEncoding) {
@@ -34,7 +34,7 @@ function findFirstMatchingCompression(
       return null;
     }
     for (let availableCompression of availableCompressions) {
-      if (encoding === "*" || encoding === availableCompression.encodingName) {
+      if (encoding === '*' || encoding === availableCompression.encodingName) {
         return availableCompression;
       }
     }
@@ -52,7 +52,8 @@ function takePreferenceIntoAccount(sortedEncodingList, preferences) {
     return sortedEncodingList;
   }
 
-  for (let pref of preferences) {
+  for (let i = preferences.length - 1; i >= 0; i--) {
+    let pref = preferences[i];
     let matchIdx = sortedEncodingList.indexOf(pref);
 
     if (matchIdx >= 0) {
@@ -70,7 +71,7 @@ function takePreferenceIntoAccount(sortedEncodingList, preferences) {
  */
 function parseEncoding(acceptedEncoding) {
   return acceptedEncoding
-    .split(",")
+    .split(',')
     .map((encoding) => parseQuality(encoding))
     .sort((encodingA, encodingB) => encodingB.q - encodingA.q)
     .filter((encoding) => encoding.q > 0)
@@ -83,7 +84,7 @@ function parseEncoding(acceptedEncoding) {
  * @returns {{name: string, q: number}[]}
  */
 function parseQuality(encoding) {
-  let eSplit = encoding.split(";");
+  let eSplit = encoding.split(';');
   try {
     if (eSplit.length > 1) {
       const num = eSplit[1].trim().match(/q=(.*)/)[1];

@@ -75,4 +75,9 @@ describe('encoding-selection', function () {
         const result = findEncoding('br;q=1, *;q=0', [GZIP]);
         expect(result).to.be.null;
     });
+
+    it('should favour server preference over client header', function () {
+        const result = findEncoding('gzip, deflate, br', [GZIP, BROTLI], ['br', 'gzip']);
+        expect(result).to.be.equal(BROTLI);
+    });
 });

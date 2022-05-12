@@ -56,6 +56,15 @@ describe('End to end', function () {
         });
     });
 
+    it('should handle index option default with queryargs', function () {
+        setupServer();
+
+        return requestFile('/?foo=bar', { 'accept-encoding': 'gzip' }).then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal('index.html.gz');
+        });
+    });
+
     it('should handle index option set', function () {
         setupServer({ index: 'main.js', enableBrotli: true });
 

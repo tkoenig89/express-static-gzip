@@ -90,8 +90,10 @@ function expressStaticGzipMiddleware(root, options) {
   }
 
   function changeUrlFromDirectoryToIndexFile(req) {
-    if (opts.index && req.url.endsWith("/")) {
-      req.url += opts.index;
+    const parts = req.url.split('?');
+    if (opts.index && parts[0].endsWith("/")) {
+      parts[0] += opts.index;
+      req.url = parts.length > 1 ? parts.join('?') : parts[0];
     }
   }
 

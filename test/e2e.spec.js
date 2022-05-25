@@ -246,7 +246,8 @@ describe('End to end', function () {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve({ ...resp, body });
+                        resp.body = body;
+                        resolve(resp);
                     }
                 });
         });

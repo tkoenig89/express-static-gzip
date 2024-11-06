@@ -1,4 +1,5 @@
 let fs = require("fs");
+var parseUrl = require('parseurl')
 let serveStatic = require("serve-static");
 let sanitizeOptions = require("./util/options").sanitizeOptions;
 let findEncoding = require("./util/encoding-selection").findEncoding;
@@ -91,7 +92,7 @@ function expressStaticGzipMiddleware(root, options) {
 
   function changeUrlFromDirectoryToIndexFile(req) {
     const parts = req.url.split('?');
-    if (opts.index && parts[0].endsWith("/")) {
+    if (opts.index && parts[0].endsWith("/") && parseUrl.original(req).pathname.endsWith("/")) {
       parts[0] += opts.index;
       req.url = parts.length > 1 ? parts.join('?') : parts[0];
     }

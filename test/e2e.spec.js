@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 
 const express = require('express');
-const request = require('request');
+const request = require('request').defaults({ followRedirect: false });
 const serveStaticGzip = require('../index');
 
 describe('End to end', function () {
@@ -69,6 +69,30 @@ describe('End to end', function () {
         setupServer({ index: 'main.js', enableBrotli: true });
 
         return requestFile('/', { 'accept-encoding': 'br' }).then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal('main.js.br');
+        });
+    });
+
+    it('should redirect to a directory with trailing slash with non-root mount', function() {
+        setupServer(null, null, '/custom');
+        return requestFile('/custom', { 'accept-encoding': 'br' }).then(resp => {
+            expect(resp.statusCode).to.equal(301);
+            expect(resp.headers['location']).to.equal('/custom/');
+        });
+    });
+
+    it('should serve compressed index with non-root mount', function() {
+        setupServer(null, null, '/custom');
+        return requestFile('/custom/', { 'accept-encoding': 'gzip' }).then(resp => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal('index.html.gz');
+        });
+    });
+
+    it('should serve compressed file with non-root mount', function() {
+        setupServer({ enableBrotli: true }, null, '/custom');
+        return requestFile('/custom/main.js', { 'accept-encoding': 'br ' }).then(resp => {
             expect(resp.statusCode).to.equal(200);
             expect(resp.body).to.equal('main.js.br');
         });
@@ -186,7 +210,7 @@ describe('End to end', function () {
         });
     });
 
-    it('should handle subforlders', function () {
+    it('should handle subfolders', function () {
         setupServer(null, 'wwwroot.gzipped');
 
         return requestFile("/css/style.css", { 'accept-encoding': 'gzip' }).then(resp => {
@@ -257,10 +281,11 @@ describe('End to end', function () {
      * 
      * @param {expressStaticGzip.ExpressStaticGzipOptions} options 
      */
-    function setupServer(options, dir) {
+    function setupServer(options, dir, mount) {
         dir = dir || 'wwwroot';
+        mount = mount || '/';
         const app = express();
-        app.use(serveStaticGzip(__dirname + '/' + dir, options));
+        app.use(mount, serveStaticGzip(__dirname + '/' + dir, options));
         server = app.listen(8181);
     }
 });

@@ -1,9 +1,9 @@
 let fs = require("fs");
 var parseUrl = require('parseurl')
 let serveStatic = require("serve-static");
+let mime = require("mime-types");
 let sanitizeOptions = require("./util/options").sanitizeOptions;
 let findEncoding = require("./util/encoding-selection").findEncoding;
-let mime = serveStatic.mime;
 
 module.exports = expressStaticGzipMiddleware;
 

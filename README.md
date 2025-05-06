@@ -21,7 +21,11 @@ Simplest use case is to either have a folder with only .gz files, or you have a 
     $ npm install express-static-gzip
 ```
 
-# Changelog for v2.0
+# v3.0
+
+This version updates express (v5) and serve-static (v2) dependencies to new major versions.
+
+# v2.0
 
 * Even so this is a mayor release, this should be fully backwards compatible and should not have any breaking change to v1.1.3.
 

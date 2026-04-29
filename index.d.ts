@@ -1,4 +1,4 @@
-// Type definitions for express-static-gzip 2.0
+// Type definitions for express-static-gzip 3.0.0
 /* =================== USAGE ===================
 
     import * as expressStaticGzip from "express-static-gzip";
@@ -15,7 +15,7 @@ import * as serverStatic from "serve-static";
  * @param root folder to staticly serve files from
  * @param options options to configure expressStaticGzip
  */
-declare function expressStaticGzip(root: string, options: expressStaticGzip.ExpressStaticGzipOptions): (req: any, res: any, next: any) => any;
+declare function expressStaticGzip(root: string, options?: expressStaticGzip.ExpressStaticGzipOptions): (req: any, res: any, next: any) => any;
 
 declare namespace expressStaticGzip {
 

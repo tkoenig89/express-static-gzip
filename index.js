@@ -7,6 +7,21 @@ let findEncoding = require("./util/encoding-selection").findEncoding;
 
 module.exports = expressStaticGzipMiddleware;
 
+function sendBadRequest(res, message) {
+  if (typeof res.status === "function" && typeof res.send === "function") {
+    res.status(400).send(message);
+    return;
+  }
+
+  res.statusCode = 400;
+
+  if (typeof res.setHeader === "function") {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  }
+
+  res.end(message);
+}
+
 /**
  * Generates a middleware function to serve pre-compressed files. It is build on top of serveStatic.
  * The pre-compressed files need to be placed next to the original files, in the provided `root` directory.
@@ -34,7 +49,7 @@ function expressStaticGzipMiddleware(root, options) {
     try {
       path = decodeURIComponent(req.path);
     } catch (e) {
-      res.status(400).send(e.message);
+      sendBadRequest(res, e.message);
       return;
     }
 

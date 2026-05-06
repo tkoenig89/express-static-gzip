@@ -257,6 +257,31 @@ describe('End to end', function () {
       });
     });
 
+    it('should handle malformed uri with plain node response object', function () {
+        const middleware = serveStaticGzip(__dirname + '/wwwroot');
+        const req = {headers: {}, path: '/%c0', url: '/%c0'};
+        const res = {
+            statusCode: 200,
+            headers: {},
+            setHeader(name, value) {
+                this.headers[name] = value;
+            },
+            end(body) {
+                this.body = body;
+                this.ended = true;
+            }
+        };
+
+        middleware(req, res, () => {
+            throw new Error('next should not be called');
+        });
+
+        expect(res.statusCode).to.equal(400);
+        expect(res.headers['Content-Type']).to.equal('text/plain; charset=utf-8');
+        expect(res.body).to.equal('URI malformed');
+        expect(res.ended).to.equal(true);
+    });
+
     /**
      * 
      * @param {string} fileName 

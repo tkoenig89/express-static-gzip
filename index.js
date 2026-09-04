@@ -41,6 +41,7 @@ function expressStaticGzipMiddleware(root, options) {
   return expressStaticGzip;
 
   function expressStaticGzip(req, res, next) {
+    let originalURL = req.url;
     changeUrlFromDirectoryToIndexFile(req);
 
     let clientsAcceptedEncodings = req.headers["accept-encoding"];
@@ -68,7 +69,10 @@ function expressStaticGzipMiddleware(root, options) {
       }
     }
 
-    serveStaticMiddleware(req, res, next);
+    serveStaticMiddleware(req, res, function (err) {
+      req.url = originalURL;
+      next(err);
+    });
   }
 
   function registerCompressionsFromOptions() {

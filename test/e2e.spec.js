@@ -282,6 +282,18 @@ describe('End to end', function () {
         expect(res.ended).to.equal(true);
     });
 
+    it('should not corrupt req.url', function () {
+        const app = express();
+        app.use(serveStaticGzip(__dirname + '/wwwroot', { index: 'notfound.html' }));
+        app.use(serveStaticGzip(__dirname + '/wwwroot'));
+        server = app.listen(8181);
+
+        return requestFile('/').then((resp) => {
+            expect(resp.statusCode).to.equal(200);
+            expect(resp.body).to.equal('index.html');
+        });
+    });
+
     /**
      * 
      * @param {string} fileName 
